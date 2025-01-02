@@ -303,8 +303,8 @@ MODULE=TVision::TDialog PACKAGE=TVision::TDialog
 SV* new(int _ax, int ay, int bx, int by, char *title)
     CODE:
 	TDialog *w = new TDialog(TRect(_ax,ay,bx,by),title);
-        RETVAL = newSV(0);
-	sv_setpvn(newSVrv(RETVAL, "TVision::TDialog"), (const char *)&w, sizeof(w));
+	new_tv_a(w,"TVision::TDialog");
+        RETVAL = rself;
     OUTPUT:
 	RETVAL
 
@@ -337,6 +337,47 @@ void setTitle(SV *self, char *title)
 	strcpy((char*)w->title,title);
 	w->draw();
 
+MODULE=TVision::TView PACKAGE=TVision::TView
+void locate(SV *self, int _ax, int ay, int bx, int by)
+    CODE:
+	TView* w = (TView*)sv2tv_a(self);
+	TRect r(_ax,ay,bx,by);
+	w->locate(r);
+
+void blockCursor(SV *self)
+    CODE:
+	TView* w = (TView*)sv2tv_a(self);
+	w->blockCursor();
+
+void normalCursor(SV *self)
+    CODE:
+	TView* w = (TView*)sv2tv_a(self);
+	w->normalCursor();
+
+void resetCursor(SV *self)
+    CODE:
+	TView* w = (TView*)sv2tv_a(self);
+	w->resetCursor();
+
+void setCursor(SV *self, int x, int y)
+    CODE:
+	TView* w = (TView*)sv2tv_a(self);
+	w->setCursor(x,y);
+
+void showCursor(SV *self)
+    CODE:
+	TView* w = (TView*)sv2tv_a(self);
+	w->showCursor();
+
+void drawCursor(SV *self)
+    CODE:
+	TView* w = (TView*)sv2tv_a(self);
+	w->drawCursor();
+
+void focus(SV *self)
+    CODE:
+	TView* w = (TView*)sv2tv_a(self);
+	w->focus();
 
 MODULE=TVision::TInputLine PACKAGE=TVision::TInputLine
 SV* new(int _ax, int ay, int bx, int by, int limit)
@@ -374,8 +415,8 @@ SV* new(int _ax, int ay, int bx, int by, AV *_items)
 	    tsit = n;
 	}
 	TCheckBoxes *w = new TCheckBoxes(TRect(_ax,ay,bx,by), tsit);
-        RETVAL = newSV(0);
-	sv_setpvn(newSVrv(RETVAL, "TVision::TCheckBoxes"), (const char *)&w, sizeof(w));
+	new_tv_a(w,"TVision::TCheckBoxes");
+        RETVAL = rself;
     OUTPUT:
 	RETVAL
 
@@ -392,8 +433,8 @@ SV* new(int _ax, int ay, int bx, int by, AV *_items)
 	    tsit = n;
 	}
 	TRadioButtons *w = new TRadioButtons(TRect(_ax,ay,bx,by), tsit);
-        RETVAL = newSV(0);
-	sv_setpvn(newSVrv(RETVAL, "TVision::TRadioButtons"), (const char *)&w, sizeof(w));
+	new_tv_a(w,"TVision::TRadioButtons");
+        RETVAL = rself;
     OUTPUT:
 	RETVAL
 
@@ -401,8 +442,8 @@ MODULE=TVision::TScrollBar PACKAGE=TVision::TScrollBar
 SV* new(int _ax, int ay, int bx, int by)
     CODE:
 	TScrollBar *w = new TScrollBar(TRect(_ax,ay,bx,by));
-        RETVAL = newSV(0);
-	sv_setpvn(newSVrv(RETVAL, "TVision::TScrollBar"), (const char *)&w, sizeof(w));
+	new_tv_a(w,"TVision::TScrollBar");
+        RETVAL = rself;
     OUTPUT:
 	RETVAL
 
@@ -410,23 +451,20 @@ MODULE=TVision::TIndicator PACKAGE=TVision::TIndicator
 SV* new(int _ax, int ay, int bx, int by)
     CODE:
 	TIndicator *w = new TIndicator(TRect(_ax,ay,bx,by));
-        RETVAL = newSV(0);
-	sv_setpvn(newSVrv(RETVAL, "TVision::TIndicator"), (const char *)&w, sizeof(w));
+	new_tv_a(w,"TVision::TIndicator");
+        RETVAL = rself;
     OUTPUT:
 	RETVAL
 
 MODULE=TVision::TEditor PACKAGE=TVision::TEditor
 SV* new(int _ax, int ay, int bx, int by, SV *svsb1, SV *svsb2, SV *svind, int n)
     CODE:
-        SV *_svsb1 = SvRV(svsb1);
-        TScrollBar* sb1 = *((TScrollBar**) SvPV_nolen(_svsb1));
-        SV *_svsb2 = SvRV(svsb2);
-        TScrollBar* sb2 = *((TScrollBar**) SvPV_nolen(_svsb2));
-        SV *_ind = SvRV(svind);
-        TIndicator* ind = *((TIndicator**) SvPV_nolen(_ind));
+        TScrollBar* sb1 = (TScrollBar*) sv2tv_a(svsb1);
+        TScrollBar* sb2 = (TScrollBar*) sv2tv_a(svsb2);
+        TIndicator* ind = (TIndicator*) sv2tv_a(svind);
 	TEditor *w = new TEditor(TRect(_ax,ay,bx,by),sb1,sb2,ind, n);
-        RETVAL = newSV(0);
-	sv_setpvn(newSVrv(RETVAL, "TVision::TEditor"), (const char *)&w, sizeof(w));
+	new_tv_a(w,"TVision::TEditor");
+        RETVAL = rself;
     OUTPUT:
 	RETVAL
 
@@ -435,8 +473,8 @@ SV* new(int _ax, int ay, int bx, int by, char *title, int num)
     CODE:
         TRect r(_ax,ay,bx,by);
 	TWindow *w = new TWindow(r,title,num);
-        RETVAL = newSV(0);
-	sv_setpvn(newSVrv(RETVAL, "TVision::TWindow"), (const char *)&w, sizeof(w));
+	new_tv_a(w,"TVision::TWindow");
+        RETVAL = rself;
     OUTPUT:
 	RETVAL
 
@@ -457,8 +495,8 @@ SV* new(char *nm, int key, int helpCtx = hcNoContext)
     CODE:
 	// TSubMenu(TStringView nm, TKey key, ushort helpCtx = hcNoContext);
 	TSubMenu *w = new TSubMenu(TStringView(nm),key,helpCtx);
-        RETVAL = newSV(0);
-	sv_setpvn(newSVrv(RETVAL, "TVision::TSubMenu"), (const char *)&w, sizeof(w));
+	new_tv_a(w,"TVision::TSubMenu");
+        RETVAL = rself;
     OUTPUT:
 	RETVAL
 
@@ -476,8 +514,8 @@ SV* new(int _ax, int ay, int bx, int by, SV *TMenu_or_TSubMenu)
 	} else {
 	    croak("wrong inheritance in TVision::TMenuBar::new");
 	}
-        RETVAL = newSV(0);
-	sv_setpvn(newSVrv(RETVAL, "TVision::TMenuBar"), (const char *)&w, sizeof(w));
+	new_tv_a(w,"TVision::TMenuBar");
+        RETVAL = rself;
     OUTPUT:
 	RETVAL
 
@@ -494,8 +532,8 @@ SV* new(int _ax, int ay, int bx, int by, char *title, int num)
 #endif
 
 MODULE=TVision::TDeskTop PACKAGE=TVision::TDeskTop
-void
-insert(SV *self, SV *what)
+
+void insert_obsoleted(SV *self, SV *what)
     CODE:
 	TDeskTop* td = sv2tv_s(self,TDeskTop);
         SV *sv = SvRV(what);
@@ -504,8 +542,7 @@ insert(SV *self, SV *what)
 	//printf("w=%016X, deskt=%016X\n", w, td);
 	td->insert(w);
 
-void
-insert1(SV *self, SV *what)
+void insert(SV *self, SV *what)
     CODE:
 	TDeskTop* td = (TDeskTop*)sv2tv_s(self,TDeskTop);
 	TWindow* w = sv2tv_a(what);
