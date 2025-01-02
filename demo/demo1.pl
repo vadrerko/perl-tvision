@@ -15,7 +15,7 @@ my $sb2 = TVision::TScrollBar::new(50,2,110,4);
 my $ind = TVision::TIndicator::new(50,6,110,7);
 my $tedit = TVision::TEditor::new(50,6,110,36,  $sb1,$sb2,$ind,2);
 $desktop->insert($w);
-$desktop->insert($e);
+$desktop->insert($e1);
 $desktop->insert($checkboxes);
 $desktop->insert($radiobtns);
 #$desktop->insert($ew);
