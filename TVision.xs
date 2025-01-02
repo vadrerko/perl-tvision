@@ -355,7 +355,7 @@ void setData(SV *self, char *data)
 char *getData(SV *self)
     CODE:
         TInputLine* til = (TInputLine*) sv2tv_a(self);
-	char data[2048]; // OMG
+	char data[2048]; // OMG2
 	til->getData(data);
 	RETVAL=data;
     OUTPUT:
@@ -368,7 +368,7 @@ SV* new(int _ax, int ay, int bx, int by, AV *_items)
 	//printf("items=%d\n",cnt);
         TSItem *tsit = 0;
 	for (int i=cnt-1; i>=0; i--) {
-	    SV **sv = av_fetch(_items, i, 0); 
+	    SV **sv = av_fetch(_items, i, 0);
 	    //printf("i=%d s=%s\n", i, SvPV_nolen(*sv));
 	    TSItem *n = new TSItem(SvPV_nolen(*sv), tsit);
 	    tsit = n;
@@ -386,7 +386,7 @@ SV* new(int _ax, int ay, int bx, int by, AV *_items)
 	//printf("items=%d\n",cnt);
         TSItem *tsit = 0;
 	for (int i=cnt-1; i>=0; i--) {
-	    SV **sv = av_fetch(_items, i, 0); 
+	    SV **sv = av_fetch(_items, i, 0);
 	    //printf("i=%d s=%s\n", i, SvPV_nolen(*sv));
 	    TSItem *n = new TSItem(SvPV_nolen(*sv), tsit);
 	    tsit = n;
@@ -418,14 +418,12 @@ SV* new(int _ax, int ay, int bx, int by)
 MODULE=TVision::TEditor PACKAGE=TVision::TEditor
 SV* new(int _ax, int ay, int bx, int by, SV *svsb1, SV *svsb2, SV *svind, int n)
     CODE:
-
         SV *_svsb1 = SvRV(svsb1);
         TScrollBar* sb1 = *((TScrollBar**) SvPV_nolen(_svsb1));
         SV *_svsb2 = SvRV(svsb2);
         TScrollBar* sb2 = *((TScrollBar**) SvPV_nolen(_svsb2));
         SV *_ind = SvRV(svind);
         TIndicator* ind = *((TIndicator**) SvPV_nolen(_ind));
-	
 	TEditor *w = new TEditor(TRect(_ax,ay,bx,by),sb1,sb2,ind, n);
         RETVAL = newSV(0);
 	sv_setpvn(newSVrv(RETVAL, "TVision::TEditor"), (const char *)&w, sizeof(w));
@@ -539,7 +537,6 @@ Tcl__Finalize(interp=NULL)
 	if (!initialized) { return; }
 	initialized = 0;
 
-    
 BOOT:
     {
-    }    
+    }
