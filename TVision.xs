@@ -2,6 +2,8 @@
 #define Uses_TButton
 #define Uses_TRect
 #define Uses_TStatusLine
+#define Uses_TStaticText
+#define Uses_TLabel
 #define Uses_TStatusDef
 #define Uses_TStatusItem
 #define Uses_TCheckBoxes
@@ -268,14 +270,13 @@ SV* new()
     OUTPUT:
 	RETVAL
 
-SV* deskTop(SV *self)
+SV* deskTop(SV *_self)
     CODE:
-        SV *sv_tapp = SvRV(self);
+        SV *sv_tapp = SvRV(_self);
         TVApp* tapp = *((TVApp**) SvPV_nolen(sv_tapp));
-	TDeskTop *td = tapp->deskTop;
-        RETVAL = newSV(0);
-	sv_setpvn(newSVrv(RETVAL, "TVision::TDeskTop"), (const char*)&td, sizeof(td));
-	//printf("tapp=%016X, deskt=%016X\n", tapp, td);
+	TDeskTop *w = tapp->deskTop;
+	new_tv_a(w,"TVision::TDeskTop");
+        RETVAL = rself;
     OUTPUT:
 	RETVAL
 
@@ -304,6 +305,27 @@ SV* new(int _ax, int ay, int bx, int by, char *title)
     CODE:
 	TDialog *w = new TDialog(TRect(_ax,ay,bx,by),title);
 	new_tv_a(w,"TVision::TDialog");
+        RETVAL = rself;
+    OUTPUT:
+	RETVAL
+
+MODULE=TVision::TLabel PACKAGE=TVision::TLabel
+
+SV* new(int _ax, int ay, int bx, int by, char *text, SV *view)
+    CODE:
+	TView *v = (TView*)sv2tv_a(view);
+	TLabel *w = new TLabel(TRect(_ax,ay,bx,by),text,v);
+        new_tv_a(w,"TVision::TLabel");
+        RETVAL = rself;
+    OUTPUT:
+	RETVAL
+
+MODULE=TVision::TStaticText PACKAGE=TVision::TStaticText
+
+SV* new(int _ax, int ay, int bx, int by, char *text)
+    CODE:
+	TStaticText *w = new TStaticText(TRect(_ax,ay,bx,by),text);
+        new_tv_a(w,"TVision::TStaticText");
         RETVAL = rself;
     OUTPUT:
 	RETVAL
@@ -337,7 +359,16 @@ void setTitle(SV *self, char *title)
 	strcpy((char*)w->title,title);
 	w->draw();
 
+MODULE=TVision::TGroup PACKAGE=TVision::TGroup
+
+void insert(SV *self, SV *what)
+    CODE:
+	TGroup* w = (TGroup*)sv2tv_a(self);
+	TWindow* wh = sv2tv_a(what);
+	w->insert(wh);
+
 MODULE=TVision::TView PACKAGE=TVision::TView
+
 void locate(SV *self, int _ax, int ay, int bx, int by)
     CODE:
 	TView* w = (TView*)sv2tv_a(self);
@@ -540,12 +571,6 @@ void insert_obsoleted(SV *self, SV *what)
         TWindow* w = *((TWindow**) SvPV_nolen(sv));
 	//printf("sv=%016X, self=%016X what=%016X\n", sv, self,what);
 	//printf("w=%016X, deskt=%016X\n", w, td);
-	td->insert(w);
-
-void insert(SV *self, SV *what)
-    CODE:
-	TDeskTop* td = (TDeskTop*)sv2tv_s(self,TDeskTop);
-	TWindow* w = sv2tv_a(what);
 	td->insert(w);
 
 MODULE=TVision PACKAGE=TVision

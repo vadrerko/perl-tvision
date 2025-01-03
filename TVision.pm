@@ -132,6 +132,7 @@ package TVision::TColorItemList;
 package TVision::TColorSelector;
 package TVision::TCommandSet;
 package TVision::TDeskTop;
+our @ISA = qw(TVision::TGroup);
 #class TDeskTop : public TGroup, public virtual TDeskInit {
 #public:
 #    TDeskTop( const TRect& ) noexcept;
@@ -381,6 +382,7 @@ package TVision::TFileDialog;
 package TVision::TFileInfoPane;
 package TVision::TFileInputLine;
 package TVision::TInputLine;
+our @ISA = qw(TVision::TView);
 #class TInputLine : public TView {
 #public:
 #    TInputLine( const TRect& bounds, int limit, TValidator *aValid = 0, ushort limitMode = ilMaxBytes ) noexcept;
@@ -442,6 +444,69 @@ package TVision::TFilterValidator;
 package TVision::TFindDialogRec;
 package TVision::TFrame;
 package TVision::TGroup;
+our @ISA = qw(TVision::TView);
+#class TGroup : public TView {
+#public:
+#[ ]    TGroup( const TRect& bounds ) noexcept;
+#[ ]    ~TGroup();
+#[ ]    virtual void shutDown();
+#[ ]    ushort execView( TView *p ) noexcept;
+#[ ]    virtual ushort execute();
+#[ ]    virtual void awaken();
+#[ ]    void insertView( TView *p, TView *Target ) noexcept;
+#[ ]    void remove( TView *p );
+#[ ]    void removeView( TView *p ) noexcept;
+#[ ]    void resetCurrent();
+#[ ]    void setCurrent( TView *p, selectMode mode );
+#[ ]    void selectNext( Boolean forwards );
+#[ ]    TView *firstThat( Boolean (*func)( TView *, void * ), void *args );
+#[ ]    Boolean focusNext(Boolean forwards);
+#[ ]    void forEach( void (*func)( TView *, void * ), void *args );
+#[ ]    void insert( TView *p ) noexcept;
+#[ ]    void insertBefore( TView *p, TView *Target );
+#[ ]    TView *current;
+#[ ]    TView *at( short index ) noexcept;
+#[ ]    TView *firstMatch( ushort aState, ushort aOptions ) noexcept;
+#[ ]    short indexOf( TView *p ) noexcept;
+#[ ]    TView *first() noexcept;
+#[ ]    virtual void setState( ushort aState, Boolean enable );
+#[ ]    virtual void handleEvent( TEvent& event );
+#[ ]    void drawSubViews( TView *p, TView *bottom ) noexcept;
+#[ ]    virtual void changeBounds( const TRect& bounds );
+#[ ]    virtual ushort dataSize();
+#[ ]    virtual void getData( void *rec );
+#[ ]    virtual void setData( void *rec );
+#[ ]    virtual void draw();
+#[ ]    void redraw() noexcept;
+#[ ]    void lock() noexcept;
+#[ ]    void unlock() noexcept;
+#[ ]    virtual void resetCursor();
+#[ ]    virtual void endModal( ushort command );
+#[ ]    virtual void eventError( TEvent& event );
+#[ ]    virtual ushort getHelpCtx();
+#[ ]    virtual Boolean valid( ushort command );
+#[ ]    void freeBuffer() noexcept;
+#[ ]    void getBuffer() noexcept;
+#[ ]    TView *last;
+#[ ]    TRect clip;
+#[ ]    phaseType phase;
+#[ ]    TScreenCell *buffer;
+#[ ]    uchar lockFlag;
+#[ ]    ushort endState;
+#[ ]private:
+#[ ]    void focusView( TView *p, Boolean enable );
+#[ ]    void selectView( TView *p, Boolean enable );
+#[ ]    TView* findNext(Boolean forwards) noexcept;
+#[ ]    virtual const char *streamableName() const { return name; }
+#[ ]protected:
+#[ ]    TGroup( StreamableInit ) noexcept;
+#[ ]    virtual void write( opstream& );
+#[ ]    virtual void *read( ipstream& );
+#[ ]public:
+#[ ]    static const char * const _NEAR name;
+#[ ]    static TStreamable *build();
+#[ ]};
+
 package TVision::THardwareInfo;
 package TVision::THistory;
 package TVision::THistoryViewer;
@@ -459,15 +524,16 @@ package TVision::TIndicator;
 #};
 package TVision::TKeys;
 package TVision::TLabel;
+our @ISA = qw(TVision::TStaticText);
 #class TLabel : public TStaticText {
-#public:
-#   TLabel( const TRect& bounds, TStringView aText, TView *aLink ) noexcept;
-#    virtual void draw();
-#    virtual TPalette& getPalette() const;
-#    virtual void handleEvent( TEvent& event );
-#    virtual void shutDown();
-#    static const char * const _NEAR name;
-#    static TStreamable *build();
+#[ ]public:
+#[x]   TLabel( const TRect& bounds, TStringView aText, TView *aLink ) noexcept;
+#[ ]    virtual void draw();
+#[ ]    virtual TPalette& getPalette() const;
+#[ ]    virtual void handleEvent( TEvent& event );
+#[ ]    virtual void shutDown();
+#[ ]    static const char * const _NEAR name;
+#[ ]    static TStreamable *build();
 #};
 
 package TVision::TListBox;
@@ -663,6 +729,28 @@ package TVision::TSearchRec;
 package TVision::TSortedCollection;
 package TVision::TSortedListBox;
 package TVision::TStaticText;
+our @ISA = qw(TVision::TView);
+#class TStaticText : public TView {
+#[ ]public:
+#[x]    TStaticText( const TRect& bounds, TStringView aText ) noexcept;
+#[ ]    ~TStaticText();
+#[ ]    virtual void draw();
+#[ ]    virtual TPalette& getPalette() const;
+#[ ]    virtual void getText( char * );
+#[ ]protected:
+#[ ]    const char *text;
+#[ ]private:
+#[ ]    virtual const char *streamableName() const { return name; }
+#[ ]protected:
+#[ ]    TStaticText( StreamableInit ) noexcept;
+#[ ]    virtual void write( opstream& );
+#[ ]    virtual void *read( ipstream& );
+#[ ]public:
+#[ ]    static const char * const _NEAR name;
+#[ ]    static TStreamable *build();
+#};
+
+
 package TVision::TStatusDef;
 package TVision::TStatusItem;
 #class TStatusItem { 
@@ -851,6 +939,7 @@ package TVision::TView;
 #};
 
 package TVision::TWindow;
+our @ISA = qw(TVision::TGroup);
 #class TWindow: public TGroup, public virtual TWindowInit { 
 #public:
 #    TWindow( const TRect& bounds, TStringView aTitle, short aNumber) noexcept;
