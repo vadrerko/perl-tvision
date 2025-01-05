@@ -263,27 +263,23 @@ MODULE=TVision::TApplication PACKAGE=TVision::TApplication
 SV* new()
     CODE:
 	tapp = new TVApp();
-	//printf("tapp=%016X\n",tapp);
-        RETVAL = get_sv("TVision::TApplication::the_app", GV_ADD);
-	sv_setpvn(newSVrv(RETVAL, "TVision::TApplication"), (const char *)&tapp, sizeof(tapp));
+	new_tv_a(tapp,"TVision::TApplication");
+        RETVAL = rself;
+        // RETVAL = get_sv("TVision::TApplication::the_app", GV_ADD);
 	//do_sv_dump(0, PerlIO_stderr(), RETVAL, 0, 10, 0,0);
     OUTPUT:
 	RETVAL
 
-SV* deskTop(SV *_self)
+SV* deskTop(TVApp *tapp)
     CODE:
-        SV *sv_tapp = SvRV(_self);
-        TVApp* tapp = *((TVApp**) SvPV_nolen(sv_tapp));
 	TDeskTop *w = tapp->deskTop;
 	new_tv_a(w,"TVision::TDeskTop");
         RETVAL = rself;
     OUTPUT:
 	RETVAL
 
-void run(SV *t)
+void run(TVApp *tapp)
     CODE:
-        SV *sv_tapp = SvRV(t);
-        TVApp* tapp = *((TVApp**) SvPV_nolen(sv_tapp));
 	tapp->run();
 
 void on_idle(SV *self, CV *c = 0)
@@ -351,9 +347,8 @@ SV* _new_a(int _ax, int ay, int bx, int by, char *title, int cmd, int flags)
     OUTPUT:
 	RETVAL
 
-void setTitle(SV *self, char *title)
+void setTitle(TButton *w, char *title)
     CODE:
-	TButton* w = (TButton*)sv2tv_a(self);
 	delete w->title;
 	w->title = new char[strlen(title)+1];
 	strcpy((char*)w->title,title);
@@ -361,53 +356,43 @@ void setTitle(SV *self, char *title)
 
 MODULE=TVision::TGroup PACKAGE=TVision::TGroup
 
-void insert(SV *self, SV *what)
+void insert(TGroup *w, TWindow *what)
     CODE:
-	TGroup* w = (TGroup*)sv2tv_a(self);
-	TWindow* wh = sv2tv_a(what);
-	w->insert(wh);
+	w->insert(what);
 
 MODULE=TVision::TView PACKAGE=TVision::TView
 
-void locate(SV *self, int _ax, int ay, int bx, int by)
+void locate(TView *w, int _ax, int ay, int bx, int by)
     CODE:
-	TView* w = (TView*)sv2tv_a(self);
 	TRect r(_ax,ay,bx,by);
 	w->locate(r);
 
-void blockCursor(SV *self)
+void blockCursor(TView* w)
     CODE:
-	TView* w = (TView*)sv2tv_a(self);
 	w->blockCursor();
 
-void normalCursor(SV *self)
+void normalCursor(TView* w)
     CODE:
-	TView* w = (TView*)sv2tv_a(self);
 	w->normalCursor();
 
-void resetCursor(SV *self)
+void resetCursor(TView* w)
     CODE:
-	TView* w = (TView*)sv2tv_a(self);
 	w->resetCursor();
 
-void setCursor(SV *self, int x, int y)
+void setCursor(TView *w, int x, int y)
     CODE:
-	TView* w = (TView*)sv2tv_a(self);
 	w->setCursor(x,y);
 
-void showCursor(SV *self)
+void showCursor(TView* w)
     CODE:
-	TView* w = (TView*)sv2tv_a(self);
 	w->showCursor();
 
-void drawCursor(SV *self)
+void drawCursor(TView* w)
     CODE:
-	TView* w = (TView*)sv2tv_a(self);
 	w->drawCursor();
 
-void focus(SV *self)
+void focus(TView* w)
     CODE:
-	TView* w = (TView*)sv2tv_a(self);
 	w->focus();
 
 MODULE=TVision::TInputLine PACKAGE=TVision::TInputLine
@@ -419,14 +404,12 @@ SV* new(int _ax, int ay, int bx, int by, int limit)
     OUTPUT:
 	RETVAL
 
-void setData(SV *self, char *data)
+void setData(TInputLine *til, char *data)
     CODE:
-        TInputLine* til = (TInputLine*) sv2tv_a(self);
 	til->setData(data);
 
-char *getData(SV *self)
+char *getData(TInputLine *til)
     CODE:
-        TInputLine* til = (TInputLine*) sv2tv_a(self);
 	char data[2048]; // OMG2
 	til->getData(data);
 	RETVAL=data;
@@ -569,35 +552,9 @@ void insert_obsoleted(SV *self, SV *what)
 	TDeskTop* td = sv2tv_s(self,TDeskTop);
         SV *sv = SvRV(what);
         TWindow* w = *((TWindow**) SvPV_nolen(sv));
-	//printf("sv=%016X, self=%016X what=%016X\n", sv, self,what);
-	//printf("w=%016X, deskt=%016X\n", w, td);
 	td->insert(w);
 
 MODULE=TVision PACKAGE=TVision
-
-void
-Tcl_DESTROY(interp)
-	SV *	interp
-    CODE:
-	/*
-	TODO
-	    TObject::destroy( demoProgram );
-	*/
-	if (initialized) {
-	    /*
-	     * Remove from the global hash of live interps.
-	     */
-	}
-
-void
-Tcl__Finalize(interp=NULL)
-    CODE:
-	/*
-	 * This should be called from the END block - when we no
-	 * longer plan to use Tcl *AT ALL*.
-	 */
-	if (!initialized) { return; }
-	initialized = 0;
 
 BOOT:
     {
