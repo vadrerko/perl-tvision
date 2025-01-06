@@ -25,6 +25,7 @@
 #define Uses_TDialog
 #define Uses_TScreen
 #define Uses_TSItem
+#define Uses_TMenu
 #define Uses_TMenuItem
 #define Uses_TMenuBar
 #define Uses_TSubMenu
@@ -492,17 +493,14 @@ SV* new(int _ax, int ay, int bx, int by, char *title, int num)
     OUTPUT:
 	RETVAL
 
-#if 0
 MODULE=TVision::TMenu PACKAGE=TVision::TMenu
-SV* new(int _ax, int ay, int bx, int by, char *title, int num)
+SV* new()
     CODE:
-        TRect r(_ax,ay,bx,by);
-	TMenu *w = new TMenu(r,title,num);
-        RETVAL = newSV(0);
-	sv_setpvn(newSVrv(RETVAL, "TVision::TMenu"), (const char *)&w, sizeof(w));
+	TMenu *w = new TMenu();
+	new_tv_a(w,"TVision::TMenu");
+        RETVAL = rself;
     OUTPUT:
 	RETVAL
-#endif
 
 MODULE=TVision::TSubMenu PACKAGE=TVision::TSubMenu
 SV* new(char *nm, int key, int helpCtx = hcNoContext)
@@ -539,8 +537,8 @@ SV* new(int _ax, int ay, int bx, int by, char *title, int num)
     CODE:
         TRect r(_ax,ay,bx,by);
 	TEditWindow *w = new TEditWindow(r,title,num);
-        RETVAL = newSV(0);
-	sv_setpvn(newSVrv(RETVAL, "TVision::TEditWindow"), (const char *)&w, sizeof(w));
+	new_tv_a(w,"TVision::TEditWindow");
+        RETVAL = rself;
     OUTPUT:
 	RETVAL
 #endif

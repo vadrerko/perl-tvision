@@ -1,31 +1,42 @@
+
 TYPEMAP
-TObject*    O_TObject
-TView*      O_TView
-TVApp*      O_TVApp
-TButton*    O_TButton
-TGroup*     O_TGroup
-TWindow*    O_TWindow
-TInputLine* O_TInputLine
+TObject*  O_TObject
+TButton*  O_TButton
+TMenu*  O_TMenu
+TGroup*  O_TGroup
+TWindow*  O_TWindow
+TEditWindow*  O_TEditWindow
+TView*  O_TView
+TVApp*  O_TVApp
+TInputLine*  O_TInputLine
+TLabel*  O_TLabel
+TSaticText*  O_TSaticText
+
 
 INPUT
 O_TObject
-  /*$var= tvision_info_from_magic($arg, OR_DIE)->tobj;*/
+  $var = (TObject*)sv2tv_a($arg);
 O_TButton
-  /*$var= dynamic_cast<TButton*>(tvision_info_from_magic($arg, OR_DIE)->tobj);*/
-  /*if (!$var) croak(\"Not an instance of TButton\");*/
   $var = (TButton*)sv2tv_a($arg);
+O_TMenu
+  $var = (TMenu*)sv2tv_a($arg);
 O_TGroup
   $var = (TGroup*)sv2tv_a($arg);
 O_TWindow
   $var = (TWindow*)sv2tv_a($arg);
+O_TEditWindow
+  $var = (TEditWindow*)sv2tv_a($arg);
 O_TView
-  /*$var= dynamic_cast<TView*>(tvision_info_from_magic($arg, OR_DIE)->tobj);*/
-  /*if (!$var) croak(\"Not an instance of TView\");*/
   $var = (TView*)sv2tv_a($arg);
 O_TVApp
   $var = (TVApp*)sv2tv_a($arg);
 O_TInputLine
   $var = (TInputLine*)sv2tv_a($arg);
+O_TLabel
+  $var = (TLabel*)sv2tv_a($arg);
+O_TSaticText
+  $var = (TSaticText*)sv2tv_a($arg);
+
 
 OUTPUT
 O_TDialog

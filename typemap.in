@@ -1,0 +1,41 @@
+{{{
+# this file is for Text::Template with DELIMITERS=>['{{{','}}}'] option
+@tclasses = qw(
+    TObject
+    TButton
+    TMenu
+    TGroup
+    TWindow
+    TEditWindow
+    TView
+    TVApp
+    TInputLine
+    TLabel
+    TSaticText
+);
+
+=comment
+O_TObject
+  $var= tvision_info_from_magic($arg, OR_DIE)->tobj;
+O_TButton
+  $var= dynamic_cast<TButton*>(tvision_info_from_magic($arg, OR_DIE)->tobj);
+  if (!$var) croak(\"Not an instance of TButton\");
+=cut
+''}}}
+TYPEMAP
+{{{
+join '', map {"$_*  O_$_\n"} @tclasses;
+}}}
+
+INPUT
+{{{
+join '', map {<<"EOS"} @tclasses;
+O_$_
+  \$var = ($_*)sv2tv_a(\$arg);
+EOS
+}}}
+
+OUTPUT
+O_TDialog
+  TBD
+
