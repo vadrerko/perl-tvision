@@ -1,21 +1,41 @@
 
 TYPEMAP
-TObject*  O_TObject
+TVApp*  O_TVApp
+TApplication*  O_TApplication
+TDeskTop*  O_TDeskTop
 TButton*  O_TButton
 TMenu*  O_TMenu
 TGroup*  O_TGroup
 TWindow*  O_TWindow
 TEditWindow*  O_TEditWindow
 TView*  O_TView
-TVApp*  O_TVApp
 TInputLine*  O_TInputLine
 TLabel*  O_TLabel
-TSaticText*  O_TSaticText
+TStaticText*  O_TStaticText
+TStatusLine*  O_TStatusLine
+TStatusDef*  O_TStatusDef
+TStatusItem*  O_TStatusItem
+TCheckBoxes*  O_TCheckBoxes
+TRadioButtons*  O_TRadioButtons
+TScroller*  O_TScroller
+TScrollBar*  O_TScrollBar
+TIndicator*  O_TIndicator
+TEditor*  O_TEditor
+TDialog*  O_TDialog
+TScreen*  O_TScreen
+TSItem*  O_TSItem
+TMenuItem*  O_TMenuItem
+TMenuBar*  O_TMenuBar
+TSubMenu*  O_TSubMenu
 
 
 INPUT
-O_TObject
-  $var = (TObject*)sv2tv_a($arg);
+O_TVApp
+  $var = (TVApp*)sv2tv_a($arg);
+O_TApplication
+  $var = (TApplication*)sv2tv_a($arg);
+O_TDeskTop
+  $var = (TDeskTop*)sv2tv_a($arg);
 O_TButton
   $var = (TButton*)sv2tv_a($arg);
 O_TMenu
@@ -28,14 +48,42 @@ O_TEditWindow
   $var = (TEditWindow*)sv2tv_a($arg);
 O_TView
   $var = (TView*)sv2tv_a($arg);
-O_TVApp
-  $var = (TVApp*)sv2tv_a($arg);
 O_TInputLine
   $var = (TInputLine*)sv2tv_a($arg);
 O_TLabel
   $var = (TLabel*)sv2tv_a($arg);
-O_TSaticText
-  $var = (TSaticText*)sv2tv_a($arg);
+O_TStaticText
+  $var = (TStaticText*)sv2tv_a($arg);
+O_TStatusLine
+  $var = (TStatusLine*)sv2tv_a($arg);
+O_TStatusDef
+  $var = (TStatusDef*)sv2tv_a($arg);
+O_TStatusItem
+  $var = (TStatusItem*)sv2tv_a($arg);
+O_TCheckBoxes
+  $var = (TCheckBoxes*)sv2tv_a($arg);
+O_TRadioButtons
+  $var = (TRadioButtons*)sv2tv_a($arg);
+O_TScroller
+  $var = (TScroller*)sv2tv_a($arg);
+O_TScrollBar
+  $var = (TScrollBar*)sv2tv_a($arg);
+O_TIndicator
+  $var = (TIndicator*)sv2tv_a($arg);
+O_TEditor
+  $var = (TEditor*)sv2tv_a($arg);
+O_TDialog
+  $var = (TDialog*)sv2tv_a($arg);
+O_TScreen
+  $var = (TScreen*)sv2tv_a($arg);
+O_TSItem
+  $var = (TSItem*)sv2tv_a($arg);
+O_TMenuItem
+  $var = (TMenuItem*)sv2tv_a($arg);
+O_TMenuBar
+  $var = (TMenuBar*)sv2tv_a($arg);
+O_TSubMenu
+  $var = (TSubMenu*)sv2tv_a($arg);
 
 
 OUTPUT

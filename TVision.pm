@@ -164,6 +164,7 @@ package TVision::TEditWindow;
 #};
 
 package TVision::TEditor;
+our @ISA = qw(TVision::TView);
 #class TEditor : public TView {
 #public:
 #    friend void genRefs();

@@ -1,20 +1,43 @@
 {{{
 # this file is for Text::Template with DELIMITERS=>['{{{','}}}'] option
 @tclasses = qw(
-    TObject
+    TVApp
+    TApplication
+    TDeskTop
     TButton
     TMenu
     TGroup
     TWindow
     TEditWindow
     TView
-    TVApp
     TInputLine
     TLabel
-    TSaticText
+    TStaticText
+    TStatusLine
+    TStatusDef
+    TStatusItem
+    TCheckBoxes
+    TRadioButtons
+    TScroller
+    TScrollBar
+    TIndicator
+    TEditor
+    TDialog
+    TScreen
+    TSItem
+    TMenuItem
+    TMenuBar
+    TSubMenu
 );
 
 =comment
+
+    TEvent
+    TKeys
+    MsgBox
+    TObject
+    TRect
+
 O_TObject
   $var= tvision_info_from_magic($arg, OR_DIE)->tobj;
 O_TButton

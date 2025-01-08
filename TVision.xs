@@ -21,7 +21,6 @@
 #define Uses_TApplication
 #define Uses_TWindow
 #define Uses_TEditWindow
-#define Uses_TDeskTop
 #define Uses_TDialog
 #define Uses_TScreen
 #define Uses_TSItem
@@ -52,8 +51,8 @@ static inline TWindow* sv2tv_h(SV *sv) {
 }
 static inline TWindow* sv2tv_a(SV *sv) {
     // SvTYPE(SvRV(SV*)) === SVt_PVAV    Array
-    AV *hv = (AV*) SvRV(sv);
-    SV** f = av_fetch(hv, 0, 0);
+    AV *av = (AV*) SvRV(sv);
+    SV** f = av_fetch(av, 0, 0);
     if (!f)
 	croak("self[0] does not contain tvision object");
     TWindow* w = *((TWindow**) SvPV_nolen(*f));
@@ -62,6 +61,10 @@ static inline TWindow* sv2tv_a(SV *sv) {
 #define sv2tv_s(sv,type) *((type**) SvPV_nolen(SvRV(sv)))
 #define new_tv_a(w, pkg) \
     AV *self = newAV(); \
+    av_store(self, 0, newSVpvn((const char *)&w, sizeof(w))); \
+    SV *rself = newRV_inc((SV*) self); \
+    sv_bless(rself, gv_stashpv(pkg, GV_ADD))
+#define new_tvobj_a(self, w, pkg) \
     av_store(self, 0, newSVpvn((const char *)&w, sizeof(w))); \
     SV *rself = newRV_inc((SV*) self); \
     sv_bless(rself, gv_stashpv(pkg, GV_ADD))
@@ -472,11 +475,9 @@ SV* new(int _ax, int ay, int bx, int by)
 	RETVAL
 
 MODULE=TVision::TEditor PACKAGE=TVision::TEditor
-SV* new(int _ax, int ay, int bx, int by, SV *svsb1, SV *svsb2, SV *svind, int n)
+SV* new(int _ax, int ay, int bx, int by, TScrollBar *sb1, TScrollBar *sb2, TIndicator *ind, int n)
     CODE:
-        TScrollBar* sb1 = (TScrollBar*) sv2tv_a(svsb1);
-        TScrollBar* sb2 = (TScrollBar*) sv2tv_a(svsb2);
-        TIndicator* ind = (TIndicator*) sv2tv_a(svind);
+	if (sb1==NULL){printf("ok got NULL\n");}
 	TEditor *w = new TEditor(TRect(_ax,ay,bx,by),sb1,sb2,ind, n);
 	new_tv_a(w,"TVision::TEditor");
         RETVAL = rself;
@@ -555,5 +556,6 @@ void insert_obsoleted(SV *self, SV *what)
 MODULE=TVision PACKAGE=TVision
 
 BOOT:
-    {
-    }
+    TObject *tvnull = NULL;
+    new_tv_a(tvnull, "TVision");
+    sv_setsv(get_sv("TVision::NULL", GV_ADD), rself);
