@@ -27,6 +27,7 @@ TSItem*  O_TSItem
 TMenuItem*  O_TMenuItem
 TMenuBar*  O_TMenuBar
 TSubMenu*  O_TSubMenu
+TValidator*  O_TValidator
 
 
 INPUT
@@ -84,9 +85,42 @@ O_TMenuBar
   $var = (TMenuBar*)sv2tv_a($arg);
 O_TSubMenu
   $var = (TSubMenu*)sv2tv_a($arg);
+O_TValidator
+  $var = (TValidator*)sv2tv_a($arg);
 
 
 OUTPUT
 O_TDialog
   TBD
+O_TInputLine
+    // Look in TVision.cpp: var=$var arg=$arg type=$type Package=$Package
+    // they give us in $arg the RETVALSV = sv_newmortal();
+    // need to make rv out of it, pointing to new AV
+    // TODO: is it possible to upgrade provided SV rather than ignoring it?
+    // TODO: polish refcounts and other memory leaks here
+    AV *self = newAV();
+    av_store(self, 0, newSVpvn((const char *)&$var, sizeof($var)));
+    $arg = newRV_inc((SV*) self);
+    sv_bless($arg, gv_stashpv("$Package", GV_ADD));
+O_TScrollBar
+    // Look in TVision.cpp: var=$var arg=$arg type=$type Package=$Package
+    // they give us in $arg the RETVALSV = sv_newmortal();
+    // need to make rv out of it, pointing to new AV
+    // TODO: is it possible to upgrade provided SV rather than ignoring it?
+    // TODO: polish refcounts and other memory leaks here
+    AV *self = newAV();
+    av_store(self, 0, newSVpvn((const char *)&$var, sizeof($var)));
+    $arg = newRV_inc((SV*) self);
+    sv_bless($arg, gv_stashpv("$Package", GV_ADD));
+O_TWindow
+    // Look in TVision.cpp: var=$var arg=$arg type=$type Package=$Package
+    // they give us in $arg the RETVALSV = sv_newmortal();
+    // need to make rv out of it, pointing to new AV
+    // TODO: is it possible to upgrade provided SV rather than ignoring it?
+    // TODO: polish refcounts and other memory leaks here
+    AV *self = newAV();
+    av_store(self, 0, newSVpvn((const char *)&$var, sizeof($var)));
+    $arg = newRV_inc((SV*) self);
+    sv_bless($arg, gv_stashpv("$Package", GV_ADD));
+
 

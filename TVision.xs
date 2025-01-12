@@ -400,11 +400,10 @@ void focus(TView* w)
 	w->focus();
 
 MODULE=TVision::TInputLine PACKAGE=TVision::TInputLine
-SV* new(int _ax, int ay, int bx, int by, int limit)
+
+TInputLine* new(int _ax, int ay, int bx, int by, int limit)
     CODE:
-	TInputLine *w = new TInputLine(TRect(_ax,ay,bx,by),limit);
-	new_tv_a(w,"TVision::TInputLine");
-        RETVAL = rself;
+        RETVAL = new TInputLine(TRect(_ax,ay,bx,by),limit);
     OUTPUT:
 	RETVAL
 
@@ -457,11 +456,10 @@ SV* new(int _ax, int ay, int bx, int by, AV *_items)
 	RETVAL
 
 MODULE=TVision::TScrollBar PACKAGE=TVision::TScrollBar
-SV* new(int _ax, int ay, int bx, int by)
+
+TScrollBar* new(int _ax, int ay, int bx, int by)
     CODE:
-	TScrollBar *w = new TScrollBar(TRect(_ax,ay,bx,by));
-	new_tv_a(w,"TVision::TScrollBar");
-        RETVAL = rself;
+        RETVAL = new TScrollBar(TRect(_ax,ay,bx,by));
     OUTPUT:
 	RETVAL
 
@@ -485,12 +483,10 @@ SV* new(int _ax, int ay, int bx, int by, TScrollBar *sb1, TScrollBar *sb2, TIndi
 	RETVAL
 
 MODULE=TVision::TWindow PACKAGE=TVision::TWindow
-SV* new(int _ax, int ay, int bx, int by, char *title, int num)
+
+TWindow* new(int _ax, int ay, int bx, int by, char *title, int num)
     CODE:
-        TRect r(_ax,ay,bx,by);
-	TWindow *w = new TWindow(r,title,num);
-	new_tv_a(w,"TVision::TWindow");
-        RETVAL = rself;
+        RETVAL = new TWindow(TRect(_ax,ay,bx,by),title,num);
     OUTPUT:
 	RETVAL
 
@@ -542,6 +538,8 @@ SV* new(int _ax, int ay, int bx, int by, char *title, int num)
         RETVAL = rself;
     OUTPUT:
 	RETVAL
+
+
 #endif
 
 MODULE=TVision::TDeskTop PACKAGE=TVision::TDeskTop
