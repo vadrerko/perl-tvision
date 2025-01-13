@@ -59,6 +59,10 @@ package TVision::TButton;
 #[ ]    virtual void press();
 #[ ]    virtual void setState( ushort aState, Boolean enable );
 #[ ]    const char *title;
+#[ ]protected:
+#[ ]    ushort command;
+#[ ]    uchar flags;
+#[ ]    Boolean amDefault;
 #};
 our @ISA = qw(TVision::TView);
 sub new {

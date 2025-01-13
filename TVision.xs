@@ -301,32 +301,26 @@ void onCommand(SV *self, CV *c = 0)
 
 MODULE=TVision::TDialog PACKAGE=TVision::TDialog
 
-SV* new(int _ax, int ay, int bx, int by, char *title)
+TDialog* new(int _ax, int ay, int bx, int by, char *title)
     CODE:
-	TDialog *w = new TDialog(TRect(_ax,ay,bx,by),title);
-	new_tv_a(w,"TVision::TDialog");
-        RETVAL = rself;
+        RETVAL = new TDialog(TRect(_ax,ay,bx,by),title);
     OUTPUT:
 	RETVAL
 
 MODULE=TVision::TLabel PACKAGE=TVision::TLabel
 
-SV* new(int _ax, int ay, int bx, int by, char *text, SV *view)
+TLabel* new(int _ax, int ay, int bx, int by, char *text, SV *view)
     CODE:
 	TView *v = (TView*)sv2tv_a(view);
-	TLabel *w = new TLabel(TRect(_ax,ay,bx,by),text,v);
-        new_tv_a(w,"TVision::TLabel");
-        RETVAL = rself;
+        RETVAL = new TLabel(TRect(_ax,ay,bx,by),text,v);
     OUTPUT:
 	RETVAL
 
 MODULE=TVision::TStaticText PACKAGE=TVision::TStaticText
 
-SV* new(int _ax, int ay, int bx, int by, char *text)
+TStaticText* new(int _ax, int ay, int bx, int by, char *text)
     CODE:
-	TStaticText *w = new TStaticText(TRect(_ax,ay,bx,by),text);
-        new_tv_a(w,"TVision::TStaticText");
-        RETVAL = rself;
+        RETVAL = new TStaticText(TRect(_ax,ay,bx,by),text);
     OUTPUT:
 	RETVAL
 
@@ -342,12 +336,9 @@ SV* _new_h(int _ax, int ay, int bx, int by, char *title, int cmd, int flags)
     OUTPUT:
 	RETVAL
 
-SV* _new_a(int _ax, int ay, int bx, int by, char *title, int cmd, int flags)
+TButton* _new_a(int _ax, int ay, int bx, int by, char *title, int cmd, int flags)
     CODE:
-	TButton *w = new TButton(TRect(_ax,ay,bx,by),title,cmd,flags);
-        new_tv_a(w,"TVision::TButton");
-        av_store(self, 1, newSViv(cmd));
-        RETVAL = rself;
+        RETVAL = new TButton(TRect(_ax,ay,bx,by),title,cmd,flags);
     OUTPUT:
 	RETVAL
 
@@ -473,12 +464,11 @@ SV* new(int _ax, int ay, int bx, int by)
 	RETVAL
 
 MODULE=TVision::TEditor PACKAGE=TVision::TEditor
-SV* new(int _ax, int ay, int bx, int by, TScrollBar *sb1, TScrollBar *sb2, TIndicator *ind, int n)
+
+TEditor* new(int _ax, int ay, int bx, int by, TScrollBar *sb1, TScrollBar *sb2, TIndicator *ind, int n)
     CODE:
 	if (sb1==NULL){printf("ok got NULL\n");}
-	TEditor *w = new TEditor(TRect(_ax,ay,bx,by),sb1,sb2,ind, n);
-	new_tv_a(w,"TVision::TEditor");
-        RETVAL = rself;
+        RETVAL = new TEditor(TRect(_ax,ay,bx,by),sb1,sb2,ind, n);
     OUTPUT:
 	RETVAL
 
@@ -491,11 +481,10 @@ TWindow* new(int _ax, int ay, int bx, int by, char *title, int num)
 	RETVAL
 
 MODULE=TVision::TMenu PACKAGE=TVision::TMenu
-SV* new()
+
+TMenu* new()
     CODE:
-	TMenu *w = new TMenu();
-	new_tv_a(w,"TVision::TMenu");
-        RETVAL = rself;
+        RETVAL = new TMenu();
     OUTPUT:
 	RETVAL
 
