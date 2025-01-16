@@ -31,6 +31,8 @@ sub onCommand {
     $all_oncommands{$cmd_num} = $cb;
 }
 
+package TVision::TVApp;
+our @ISA = qw(TVision::TApplication);
 package TVision::TApplication;
 our $the_tapp;
 
@@ -65,10 +67,6 @@ package TVision::TButton;
 #[ ]    Boolean amDefault;
 #};
 our @ISA = qw(TVision::TView);
-sub new {
-    my ($ax, $ay, $bx, $by, $title, $cmd, $flags, %rest);
-    my $self = _new_a(@_);
-}
 
 package TVision::TChDirDialog;
 package TVision::TCheckBoxes;

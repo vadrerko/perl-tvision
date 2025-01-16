@@ -35,63 +35,13 @@
 #include "perl.h"
 #include "XSUB.h"
 
+#include "TVision.h"
+
 static int initialized = 0;
 CV *cv_on_idle = 0;
 CV *cv_handleEvent = 0;
 CV *cv_onCommand = 0;
 
-static inline TWindow* sv2tv_h(SV *sv) {
-    // SvTYPE(SvRV(SV*)) === SVt_PVHV    Hash
-    HV *hv = (HV*) SvRV(sv);
-    SV** f = hv_fetch(hv, "obj", 3, 0);
-    if (!f)
-	croak("obj key does not contain tvision object");
-    TWindow* w = *((TWindow**) SvPV_nolen(*f));
-    return w;
-}
-static inline TWindow* sv2tv_a(SV *sv) {
-    // SvTYPE(SvRV(SV*)) === SVt_PVAV    Array
-    AV *av = (AV*) SvRV(sv);
-    SV** f = av_fetch(av, 0, 0);
-    if (!f)
-	croak("self[0] does not contain tvision object");
-    TWindow* w = *((TWindow**) SvPV_nolen(*f));
-    return w;
-}
-#define sv2tv_s(sv,type) *((type**) SvPV_nolen(SvRV(sv)))
-#define new_tv_a(w, pkg) \
-    AV *self = newAV(); \
-    av_store(self, 0, newSVpvn((const char *)&w, sizeof(w))); \
-    SV *rself = newRV_inc((SV*) self); \
-    sv_bless(rself, gv_stashpv(pkg, GV_ADD))
-#define new_tvobj_a(self, w, pkg) \
-    av_store(self, 0, newSVpvn((const char *)&w, sizeof(w))); \
-    SV *rself = newRV_inc((SV*) self); \
-    sv_bless(rself, gv_stashpv(pkg, GV_ADD))
-
-
-class TVApp : public TApplication {
-public:
-    TVApp();
-    static TStatusLine *initStatusLine( TRect r );
-    static TMenuBar *initMenuBar( TRect r );
-    virtual void handleEvent(TEvent& Event);
-    virtual void getEvent(TEvent& event);
-    virtual void idle();              // Updates heap and clock views
-private:
-    //void aboutDlgBox();               // "About" box
-    //void printEvent(const TEvent &);
-    //void chBackground();              // Background pattern
-    //void openFile( const char *fileSpec );  // File Viewer
-    //void changeDir();                 // Change directory
-    //void mouse();                     // Mouse control dialog box
-    //void colors();                    // Color control dialog box
-    //void outOfMemory();               // For validView() function
-    //void loadDesktop(fpstream& s);    // Load and restore the
-    //void retrieveDesktop();           //  previously saved desktop
-    //void storeDesktop(fpstream& s);   // Store the current desktop
-    //void saveDesktop();               //  in a resource file
-};
 TVApp *tapp = NULL;
 TVApp::TVApp() :
     TProgInit( &TVApp::initStatusLine,
@@ -264,28 +214,6 @@ TMenuBar *TVApp::initMenuBar(TRect r) {
 
 MODULE=TVision::TApplication PACKAGE=TVision::TApplication
 
-SV* new()
-    CODE:
-	tapp = new TVApp();
-	new_tv_a(tapp,"TVision::TApplication");
-        RETVAL = rself;
-        // RETVAL = get_sv("TVision::TApplication::the_app", GV_ADD);
-	//do_sv_dump(0, PerlIO_stderr(), RETVAL, 0, 10, 0,0);
-    OUTPUT:
-	RETVAL
-
-SV* deskTop(TVApp *tapp)
-    CODE:
-	TDeskTop *w = tapp->deskTop;
-	new_tv_a(w,"TVision::TDeskTop");
-        RETVAL = rself;
-    OUTPUT:
-	RETVAL
-
-void run(TVApp *tapp)
-    CODE:
-	tapp->run();
-
 void on_idle(SV *self, CV *c = 0)
     CODE:
         cv_on_idle = c;
@@ -299,31 +227,6 @@ void onCommand(SV *self, CV *c = 0)
         cv_onCommand = c;
 	printf("cv_onCommand=%016X\n", cv_onCommand);
 
-MODULE=TVision::TDialog PACKAGE=TVision::TDialog
-
-TDialog* new(int _ax, int ay, int bx, int by, char *title)
-    CODE:
-        RETVAL = new TDialog(TRect(_ax,ay,bx,by),title);
-    OUTPUT:
-	RETVAL
-
-MODULE=TVision::TLabel PACKAGE=TVision::TLabel
-
-TLabel* new(int _ax, int ay, int bx, int by, char *text, SV *view)
-    CODE:
-	TView *v = (TView*)sv2tv_a(view);
-        RETVAL = new TLabel(TRect(_ax,ay,bx,by),text,v);
-    OUTPUT:
-	RETVAL
-
-MODULE=TVision::TStaticText PACKAGE=TVision::TStaticText
-
-TStaticText* new(int _ax, int ay, int bx, int by, char *text)
-    CODE:
-        RETVAL = new TStaticText(TRect(_ax,ay,bx,by),text);
-    OUTPUT:
-	RETVAL
-
 MODULE=TVision::TButton PACKAGE=TVision::TButton
 SV* _new_h(int _ax, int ay, int bx, int by, char *title, int cmd, int flags)
     CODE:
@@ -336,67 +239,12 @@ SV* _new_h(int _ax, int ay, int bx, int by, char *title, int cmd, int flags)
     OUTPUT:
 	RETVAL
 
-TButton* _new_a(int _ax, int ay, int bx, int by, char *title, int cmd, int flags)
-    CODE:
-        RETVAL = new TButton(TRect(_ax,ay,bx,by),title,cmd,flags);
-    OUTPUT:
-	RETVAL
-
 void setTitle(TButton *w, char *title)
     CODE:
 	delete w->title;
 	w->title = new char[strlen(title)+1];
 	strcpy((char*)w->title,title);
 	w->draw();
-
-MODULE=TVision::TGroup PACKAGE=TVision::TGroup
-
-void insert(TGroup *w, TWindow *what)
-    CODE:
-	w->insert(what);
-
-MODULE=TVision::TView PACKAGE=TVision::TView
-
-void locate(TView *w, int _ax, int ay, int bx, int by)
-    CODE:
-	TRect r(_ax,ay,bx,by);
-	w->locate(r);
-
-void blockCursor(TView* w)
-    CODE:
-	w->blockCursor();
-
-void normalCursor(TView* w)
-    CODE:
-	w->normalCursor();
-
-void resetCursor(TView* w)
-    CODE:
-	w->resetCursor();
-
-void setCursor(TView *w, int x, int y)
-    CODE:
-	w->setCursor(x,y);
-
-void showCursor(TView* w)
-    CODE:
-	w->showCursor();
-
-void drawCursor(TView* w)
-    CODE:
-	w->drawCursor();
-
-void focus(TView* w)
-    CODE:
-	w->focus();
-
-MODULE=TVision::TInputLine PACKAGE=TVision::TInputLine
-
-TInputLine* new(int _ax, int ay, int bx, int by, int limit)
-    CODE:
-        RETVAL = new TInputLine(TRect(_ax,ay,bx,by),limit);
-    OUTPUT:
-	RETVAL
 
 void setData(TInputLine *til, char *data)
     CODE:
@@ -410,96 +258,9 @@ char *getData(TInputLine *til)
     OUTPUT:
 	RETVAL
 
-MODULE=TVision::TCheckBoxes PACKAGE=TVision::TCheckBoxes
-SV* new(int _ax, int ay, int bx, int by, AV *_items)
-    CODE:
-        int cnt = av_count(_items);
-	//printf("items=%d\n",cnt);
-        TSItem *tsit = 0;
-	for (int i=cnt-1; i>=0; i--) {
-	    SV **sv = av_fetch(_items, i, 0);
-	    //printf("i=%d s=%s\n", i, SvPV_nolen(*sv));
-	    TSItem *n = new TSItem(SvPV_nolen(*sv), tsit);
-	    tsit = n;
-	}
-	TCheckBoxes *w = new TCheckBoxes(TRect(_ax,ay,bx,by), tsit);
-	new_tv_a(w,"TVision::TCheckBoxes");
-        RETVAL = rself;
-    OUTPUT:
-	RETVAL
-
-MODULE=TVision::TRadioButtons PACKAGE=TVision::TRadioButtons
-SV* new(int _ax, int ay, int bx, int by, AV *_items)
-    CODE:
-        int cnt = av_count(_items);
-	//printf("items=%d\n",cnt);
-        TSItem *tsit = 0;
-	for (int i=cnt-1; i>=0; i--) {
-	    SV **sv = av_fetch(_items, i, 0);
-	    //printf("i=%d s=%s\n", i, SvPV_nolen(*sv));
-	    TSItem *n = new TSItem(SvPV_nolen(*sv), tsit);
-	    tsit = n;
-	}
-	TRadioButtons *w = new TRadioButtons(TRect(_ax,ay,bx,by), tsit);
-	new_tv_a(w,"TVision::TRadioButtons");
-        RETVAL = rself;
-    OUTPUT:
-	RETVAL
-
-MODULE=TVision::TScrollBar PACKAGE=TVision::TScrollBar
-
-TScrollBar* new(int _ax, int ay, int bx, int by)
-    CODE:
-        RETVAL = new TScrollBar(TRect(_ax,ay,bx,by));
-    OUTPUT:
-	RETVAL
-
-MODULE=TVision::TIndicator PACKAGE=TVision::TIndicator
-SV* new(int _ax, int ay, int bx, int by)
-    CODE:
-	TIndicator *w = new TIndicator(TRect(_ax,ay,bx,by));
-	new_tv_a(w,"TVision::TIndicator");
-        RETVAL = rself;
-    OUTPUT:
-	RETVAL
-
-MODULE=TVision::TEditor PACKAGE=TVision::TEditor
-
-TEditor* new(int _ax, int ay, int bx, int by, TScrollBar *sb1, TScrollBar *sb2, TIndicator *ind, int n)
-    CODE:
-	if (sb1==NULL){printf("ok got NULL\n");}
-        RETVAL = new TEditor(TRect(_ax,ay,bx,by),sb1,sb2,ind, n);
-    OUTPUT:
-	RETVAL
-
-MODULE=TVision::TWindow PACKAGE=TVision::TWindow
-
-TWindow* new(int _ax, int ay, int bx, int by, char *title, int num)
-    CODE:
-        RETVAL = new TWindow(TRect(_ax,ay,bx,by),title,num);
-    OUTPUT:
-	RETVAL
-
-MODULE=TVision::TMenu PACKAGE=TVision::TMenu
-
-TMenu* new()
-    CODE:
-        RETVAL = new TMenu();
-    OUTPUT:
-	RETVAL
-
-MODULE=TVision::TSubMenu PACKAGE=TVision::TSubMenu
-SV* new(char *nm, int key, int helpCtx = hcNoContext)
-    CODE:
-	// TSubMenu(TStringView nm, TKey key, ushort helpCtx = hcNoContext);
-	TSubMenu *w = new TSubMenu(TStringView(nm),key,helpCtx);
-	new_tv_a(w,"TVision::TSubMenu");
-        RETVAL = rself;
-    OUTPUT:
-	RETVAL
-
 MODULE=TVision::TMenuBar PACKAGE=TVision::TMenuBar
-SV* new(int _ax, int ay, int bx, int by, SV *TMenu_or_TSubMenu)
+
+TMenuBar* new(int _ax, int ay, int bx, int by, SV *TMenu_or_TSubMenu)
     CODE:
         TRect r(_ax,ay,bx,by);
 	TMenuBar *w;
@@ -512,23 +273,17 @@ SV* new(int _ax, int ay, int bx, int by, SV *TMenu_or_TSubMenu)
 	} else {
 	    croak("wrong inheritance in TVision::TMenuBar::new");
 	}
-	new_tv_a(w,"TVision::TMenuBar");
-        RETVAL = rself;
+        RETVAL = w;
     OUTPUT:
 	RETVAL
 
 #if 0
 MODULE=TVision::TEditWindow PACKAGE=TVision::TEditWindow
-SV* new(int _ax, int ay, int bx, int by, char *title, int num)
+TEditWindow* new(int _ax, int ay, int bx, int by, char *title, int num)
     CODE:
-        TRect r(_ax,ay,bx,by);
-	TEditWindow *w = new TEditWindow(r,title,num);
-	new_tv_a(w,"TVision::TEditWindow");
-        RETVAL = rself;
+        RETVAL = new TEditWindow(TRect(_ax,ay,bx,by),title,num);
     OUTPUT:
 	RETVAL
-
-
 #endif
 
 MODULE=TVision::TDeskTop PACKAGE=TVision::TDeskTop
@@ -546,3 +301,6 @@ BOOT:
     TObject *tvnull = NULL;
     new_tv_a(tvnull, "TVision");
     sv_setsv(get_sv("TVision::NULL", GV_ADD), rself);
+    extern void boot_TVision_more();
+    boot_TVision_more(); /* for TVision-method.xs */
+
