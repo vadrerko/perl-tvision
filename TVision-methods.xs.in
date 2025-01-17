@@ -65,9 +65,29 @@ void run(TVApp *tapp)
 
 {{{
     # constructors:
-    # TBD
-    #########$TRect =
-    # TScroller( $TRect, TScrollBar *aHScrollBar, TScrollBar *aVScrollBar)
+    join '', map {
+        my ($fun, $args) = /^\s*(\S+)\s*\(\s*(.*?)\s*\)/;
+	$args =~ s/TStringView/char */g;
+	my $trecta = $args=~s/^TRect// ? 'int _ax, int ay, int bx, int by' : '';
+	my $trectv = $trecta ? 'TRect(_ax,ay,bx,by)' : '';
+	my $argv = $args =~ s/(\w+\s*\*|int)//gr;
+    <<"EOS"
+MODULE=TVision::$fun PACKAGE=TVision::$fun
+$fun* new($trecta $args)
+    CODE:
+        RETVAL = new $fun($trectv $argv);
+    OUTPUT:
+	RETVAL
+
+EOS
+    } split '\n', <<'EOS';
+	TScroller(TRect, TScrollBar *aHScrollBar, TScrollBar *aVScrollBar)
+	TLabel(TRect, TStringView aText, TView *aLink )
+	TButton(TRect, char *title, int cmd, int flags)
+	TScrollBar(TRect)
+	TIndicator(TRect)
+	TInputLine(TRect, int limit)
+EOS
 }}}
 
 {{{
@@ -84,6 +104,7 @@ EOS
 }}}
 
 {{{
+__END__
 join "", map {<<"EOS"} qw/TScrollBar TIndicator/
 MODULE=TVision::$_ PACKAGE=TVision::$_
 
@@ -96,14 +117,6 @@ $_* new(int _ax, int ay, int bx, int by)
 EOS
 }}}
 
-MODULE=TVision::TLabel PACKAGE=TVision::TLabel
-
-TLabel* new(int _ax, int ay, int bx, int by, char *text, TView *view)
-    CODE:
-        RETVAL = new TLabel(TRect(_ax,ay,bx,by),text,view);
-    OUTPUT:
-	RETVAL
-
 MODULE=TVision::TButton PACKAGE=TVision::TButton
 SV* _new_h(int _ax, int ay, int bx, int by, char *title, int cmd, int flags)
     CODE:
@@ -113,12 +126,6 @@ SV* _new_h(int _ax, int ay, int bx, int by, char *title, int cmd, int flags)
         hv_store(self, "obj", 3, newSVpvn((const char *)&w, sizeof(w)), 0);
         RETVAL = newRV_inc((SV*) self);
         sv_bless(RETVAL, gv_stashpv("TVision::TButton", GV_ADD));
-    OUTPUT:
-	RETVAL
-
-TButton* new(int _ax, int ay, int bx, int by, char *title, int cmd, int flags)
-    CODE:
-        RETVAL = new TButton(TRect(_ax,ay,bx,by),title,cmd,flags);
     OUTPUT:
 	RETVAL
 
@@ -171,12 +178,6 @@ void focus(TView* w)
 	w->focus();
 
 MODULE=TVision::TInputLine PACKAGE=TVision::TInputLine
-
-TInputLine* new(int _ax, int ay, int bx, int by, int limit)
-    CODE:
-        RETVAL = new TInputLine(TRect(_ax,ay,bx,by),limit);
-    OUTPUT:
-	RETVAL
 
 void setData(TInputLine *til, char *data)
     CODE:

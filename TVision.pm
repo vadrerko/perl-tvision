@@ -728,6 +728,36 @@ package TVision::TScrollBar;
 #    static TStreamable *build();
 #};
 package TVision::TScroller;
+#[ ]class TScroller : public TView {
+#[ ]public:
+#[ ]    TScroller( const TRect& bounds, TScrollBar *aHScrollBar, TScrollBar *aVScrollBar) noexcept;
+#[ ]    virtual void changeBounds( const TRect& bounds );
+#[ ]    virtual TPalette& getPalette() const;
+#[ ]    virtual void handleEvent( TEvent& event );
+#[ ]    virtual void scrollDraw();
+#[ ]    void scrollTo( int x, int y ) noexcept;
+#[ ]    void setLimit( int x, int y ) noexcept;
+#[ ]    virtual void setState( ushort aState, Boolean enable );
+#[ ]    void checkDraw() noexcept;
+#[ ]    virtual void shutDown();
+#[ ]    TPoint delta;
+#[ ]protected:
+#[ ]    uchar drawLock;
+#[ ]    Boolean drawFlag;
+#[ ]    TScrollBar *hScrollBar;
+#[ ]    TScrollBar *vScrollBar;
+#[ ]    TPoint limit;
+#[ ]private:
+#[ ]    void showSBar( TScrollBar *sBar );
+#[ ]    virtual const char *streamableName() const { return name; }
+#[ ]protected:
+#[ ]    TScroller( StreamableInit ) noexcept;
+#[ ]    virtual void write( opstream& );
+#[ ]    virtual void *read( ipstream& );
+#[ ]public:
+#[ ]    static const char * const _NEAR name;
+#[ ]    static TStreamable *build();
+#[ ]};
 package TVision::TSearchRec;
 package TVision::TSortedCollection;
 package TVision::TSortedListBox;
