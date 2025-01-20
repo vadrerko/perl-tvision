@@ -50,6 +50,8 @@ sub init {
 package TVision::MsgBox;
 package TVision::TApplication;
 package TVision::TBackground;
+# class TBackground : public TView {...}
+our @ISA = qw(TVision::TView);
 package TVision::TButton;
 #class TButton : public TView {
 #[x]    TButton( const TRect& bounds, TStringView aTitle, ushort aCommand, ushort aFlags) noexcept;
