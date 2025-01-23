@@ -13,6 +13,7 @@
     TMenu
     TGroup
     TWindow
+    TFrame
     TEditWindow
     TView
     TInputLine

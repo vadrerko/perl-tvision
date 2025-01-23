@@ -42,6 +42,8 @@
 #include "perl.h"
 #include "XSUB.h"
 
+#undef select
+
 #include "TVision.h"
 
 MODULE=TVision::TApplication PACKAGE=TVision::TApplication
@@ -60,12 +62,9 @@ TDeskTop* deskTop(TVApp *tapp)
     OUTPUT:
 	RETVAL
 
-void run(TVApp *tapp)
-    CODE:
-	tapp->run();
-
 {{{
     # constructors:
+    use strict;
     join '', map {
         my ($fun, $args) = /^\s*(\S+)\s*\(\s*(.*?)\s*\)/;
 	$args =~ s/TStringView/char */g;
@@ -93,38 +92,285 @@ EOS
 	TMenu()
 	TEditor(TRect, TScrollBar *sb1, TScrollBar *sb2, TIndicator *ind, int n)
 	TWindow(TRect, char *title, int num)
+        TView(TRect)
 	TDialog(TRect, char *title)
 	TStaticText(TRect, char *title)
 EOS
 }}}
 {{{
     # methods:
-    my $prev_p='';
-    join '', map {
-        my ($p, $fun, $args, $body) = /^\s*(\S+):\s*([^(]+)\s*\(\s*(.*?)\s*\)\s*(.*)$/;
-	$args =~ s/TStringView/char */g;
-	$args =~ s/TRect/int _ax, int ay, int bx, int by/g;
-	my $line0 = $prev_p eq $p ? "" : "MODULE=TVision::$p PACKAGE=TVision::$p";
-	$prev_p = $p;
-    <<"EOS"
+    use strict;
+    my $pkg='';
+    my $first=1;
+    join '', (map {
+        if (/^\s*#/) {()} # ignore comment
+        elsif (/^\s*$/) {()} # ignore empty line
+        elsif (/^\s*(\S+):/) {$pkg=$1; $first=1;() }
+	else {
+	    my ($fun, $args, $body) = /^\s*([^(]+)\s*\(\s*(.*?)\s*\)\s*(.*)$/;
+	    my $output = $fun =~ /^void/ ? '' : "    OUTPUT:\n        RETVAL\n";;
+	    my $funa = $fun =~ s/^\S+\s*//r =~ tr/*//dr;
+	    $args =~ s/TStringView/char */g;
+	    my $trectp = $args =~ s/TRect/int _ax, int ay, int bx, int by/g;
+	    my $argv = $args =~ s/(\w+\s*\*|\bint|\bchar\b|\bshort\b)//gr;
+	    my $comap =  $args =~ /^\s*$/ ? "" : ",";
+	    $argv =~ s/_ax,  ay,  bx,  by/TRect(_ax,  ay,  bx,  by)/g; # if $trectp;
+	    $args = "$pkg *self$comap$args";
+	    if ($body =~ /^\s*$/) { $body = ($output? "RETVAL = " : "") . "self->$funa($argv);"; }
+	    my $line0 = $first ? "MODULE=TVision::$pkg PACKAGE=TVision::$pkg" : "";
+	    $first=0;
+	<<"EOS"
 $line0
-$fun($trecta $args)
+$fun($args)
     CODE:
         $body
+$output
+EOS
+	}
+    } split '\n', <<'EOS');
+      TApplication:
+	void run()
+
+      TView:
+	void locate(TView *w, TRect) TRect r(_ax,ay,bx,by); w->locate(r);
+	#friend - do not do it - void genRefs()
+	#enum phaseType { phFocused, phPreProcess, phPostProcess };
+	#enum selectMode{ normalSelect, enterSelect, leaveSelect };
+	#TRect getBounds() const noexcept;
+	#TRect getExtent() const noexcept;
+	#TRect getClipRect() const noexcept;
+	#Boolean mouseInView( TPoint mouse ) noexcept;
+	#Boolean containsMouse( TEvent& event ) noexcept;
+	#void locate( TRect& bounds );
+	void growTo( short x, short y )
+	void moveTo( short x, short y )
+	void setBounds(TRect)
+	void hide()
+	void show()
+	void drawView()
+	int exposed()
+	int focus()
+	void hideCursor()
+	void drawHide( TView *lastView )
+	void drawShow( TView *lastView )
+	void drawUnderRect( TRect, TView *lastView ) TRect r(_ax,  ay,  bx,  by); self->drawUnderRect( r, lastView);
+	void drawUnderView( int doShadow, TView *lastView )
+	void blockCursor()
+	void normalCursor()
+	void setCursor( int x, int y )
+	void showCursor()
+	void drawCursor()
+	#void clearEvent( TEvent& event )
+	int eventAvail()
+	#static Boolean commandEnabled( ushort command ) noexcept;
+	#static void disableCommands( TCommandSet& commands ) noexcept;
+	#static void enableCommands( TCommandSet& commands ) noexcept;
+	#static void disableCommand( ushort command ) noexcept;
+	#static void enableCommand( ushort command ) noexcept;
+	#static void getCommands( TCommandSet& commands ) noexcept;
+	#static void setCommands( TCommandSet& commands ) noexcept;
+	#static void setCmdState( TCommandSet& commands, Boolean enable ) noexcept;
+	#TAttrPair getColor( ushort color ) noexcept;
+	int getState( int aState )
+	void select()
+	#void getEvent( TEvent& event, int timeoutMs )
+	#void keyEvent( TEvent& event );
+	#Boolean mouseEvent( TEvent& event, ushort mask );
+	#Boolean textEvent( TEvent &event, TSpan<char> dest, size_t &length );
+	#TPoint makeGlobal( TPoint source ) noexcept;
+	#TPoint makeLocal( TPoint source ) noexcept;
+	TView *nextView()
+	TView *prevView()
+	TView *prev()
+	##TView *next;
+	void makeFirst()
+	void putInFrontOf( TView *Target )
+	TView *TopView()
+	#void writeBuf(  short x, short y, short w, short h, const void _FAR* b ) noexcept;
+	#void writeBuf(  short x, short y, short w, short h, const TDrawBuffer& b ) noexcept;
+	#void writeChar( short x, short y, char c, uchar color, short count ) noexcept;
+	#void writeLine( short x, short y, short w, short h, const TDrawBuffer& b ) noexcept;
+	#void writeLine( short x, short y, short w, short h, const void _FAR *b ) noexcept;
+	#void writeStr( short x, short y, const char *str, uchar color ) noexcept;
+	# all below are - virtual
+	#virtual void sizeLimits( TPoint& min, TPoint& max );
+	#virtual void dragView( TEvent& event, uchar mode, TRect& limits, TPoint minSize, TPoint maxSize ); // temporary fix for Miller's stuff
+	#virtual void calcBounds( TRect& bounds, TPoint delta );
+	#virtual void changeBounds( const TRect& bounds );
+	int getHelpCtx()
+	int valid( int command )
+	void draw()
+	int dataSize()
+	void getData( void *rec )
+	void setData( void *rec )
+	void awaken()
+	void resetCursor()
+	#void getEvent( TEvent& event )
+	#void handleEvent( TEvent& event )
+	#void putEvent( TEvent& event )
+	void endModal( int command )
+	int execute()
+	void setState( int aState, int enable )
+	#virtual TPalette& getPalette() const;
+	#virtual TColorAttr mapColor( uchar ) noexcept;
+	#virtual TTimerId setTimer( uint timeoutMs, int periodMs = -1 );
+	#virtual void killTimer( TTimerId id );
+
+      TWindow:
+	TScrollBar *standardScrollBar( int aOptions )
+	#virtual void zoom();
+	#virtual void shutDown();
+
+      TEditor:
+	char bufChar( int a)
+	int bufPtr( int a)
+	#virtual void changeBounds( const TRect& );
+	#virtual void convertEvent( TEvent& );
+	int cursorVisible()
+	void deleteSelect()
+	#virtual void doneBuffer();
+	#virtual void draw();
+	#virtual TPalette& getPalette() const;
+	#virtual void handleEvent( TEvent& );
+	#virtual void initBuffer();
+	#virtual TMenuItem& initContextMenu( TPoint );
+	int insertMultilineText( char *a, int b)
+	#Boolean insertBuffer( const char *, uint, uint, Boolean, Boolean );
+	int insertEOL( int Boolean )
+	#virtual Boolean insertFrom( TEditor * );
+	#Boolean insertText( const void *, uint, Boolean );
+	void scrollTo( int x, int y)
+	#Boolean search( const char *, ushort );
+	#virtual Boolean setBufSize( uint );
+	void setCmdState( int ushort, int Boolean )
+	void setSelect( int a, int b, int Boolean)
+	#virtual void setState( ushort, Boolean );
+	void trackCursor( int Boolean )
+	void undo()
+	#virtual void updateCommands();
+	#virtual Boolean valid( ushort )
+	int charPos( int uint1, int uint2 )
+	int charPtr( int uint1, int a)
+	int clipCopy()
+	void clipCut()
+	void clipPaste()
+	void deleteRange( int uint1, int uint2, int Boolean )
+	void doUpdate()
+	void doSearchReplace()
+	void drawLines( int a, int b, int uint )
+	#void formatLine(TScreenCell *, uint, int, TAttrPair );
+	void find()
+	#uint getMousePtr( TPoint );
+	int hasSelection()
+	void hideSelect()
+	int isClipboard()
+	int lineEnd( int uint )
+	int lineMove( int uint, int i)
+	int lineStart( int uint )
+	int indentedLineStart( int uint )
+	void lock()
+	void newLine()
+	int nextChar( int uint )
+	int nextLine( int uint )
+	int nextWord( int uint )
+	int prevChar( int uint )
+	int prevLine( int uint )
+	int prevWord( int uint )
+	void replace()
+	void setBufLen( int uint )
+	void setCurPtr( int uint, int uchar )
+	void startSelect()
+	void toggleEncoding()
+	void toggleInsMode()
+	void unlock()
+	void update( int uchar )
+	#void checkScrollBar( const TEvent&, TScrollBar *, int& );
+	void detectEol()
+	#enum EolType { eolCrLf, eolLf, eolCr } eolType;
+	#enum Encoding { encDefault, encSingleByte } encoding;
+	#void nextChar( TStringView, uint &P, uint &width );
+	#Boolean formatCell( TSpan<TScreenCell>, uint&, TStringView, uint& , TColorAttr );
+	#TStringView bufChars( uint );
+	#TStringView prevBufChars( uint );
+
+      TGroup:
+        void insert(TWindow *what)
+	void insertView(TView *p, TView *Target) /*???*/
+      TInputLine:
+        void setData(char *data)
+      TButton:
+        void setTitle(char *title) delete self->title; self->title = new char[strlen(title)+1]; strcpy((char*)self->title,title); self->draw();
+EOS
+}}}
+{{{
+    # getters/setters:
+    use strict;
+    my $pkg='';
+    my $first=1;
+    join '', (map {
+        if (/^\s*#/) {()} # ignore comment
+        elsif (/^\s*$/) {()} # ignore empty line
+        elsif (/^\s*(\S+):/) {$pkg=$1; $first=1;() }
+	else {
+	    my ($type, $var) = /^\s*(.+)\s+(\S+)/;
+	    if ($var=~s/^\*//) {$type.='*'}
+	    #my $trectp = $args =~ s/TRect/int _ax, int ay, int bx, int by/g;
+	    my $line0 = $first ? "MODULE=TVision::$pkg PACKAGE=TVision::$pkg" : "";
+	    $first=0;
+	<<"EOS"
+$line0
+$type get_$var($pkg *self)
+    CODE:
+        RETVAL = self->$var;
+    OUTPUT:
+        RETVAL
+
+void set_$var($pkg *self, $type val)
+    CODE:
+        self->$var = val;
 
 EOS
-    } split '\n', <<'EOS';
-	TView: void blockCursor(TView* w) w->blockCursor();
-	TView: void locate(TView *w, TRect) TRect r(_ax,ay,bx,by); w->locate(r);
-	TView: void normalCursor(TView* w) w->normalCursor();
-	TView: void resetCursor(TView* w) w->resetCursor();
-	TView: void setCursor(TView *w, int x, int y) w->setCursor(x,y);
-	TView: void showCursor(TView* w) w->showCursor();
-	TView: void drawCursor(TView* w) w->drawCursor();
-	TView: void focus(TView* w) w->focus();
-	TGroup: void insert(TGroup *w, TWindow *what) w->insert(what);
-	TInputLine: void setData(TInputLine *til, char *data) til->setData(data);
-	TButton: void setTitle(TButton *w, char *title) delete w->title; w->title = new char[strlen(title)+1]; strcpy((char*)w->title,title); w->draw();
+	}
+    } split '\n', <<'EOS');
+      TEditor:
+	TScrollBar *hScrollBar
+	TScrollBar *vScrollBar
+	TIndicator *indicator
+	#char *buffer;
+	int bufSize
+	int bufLen
+	int gapLen
+	int selStart
+	int selEnd
+	int curPtr
+	#TPoint curPos
+	#TPoint delta
+	#TPoint limit
+	int drawLine
+	int drawPtr
+	int delCount
+	int insCount
+	int isValid
+	int canUndo
+	int modified
+	int selecting
+	int overwrite
+	int autoIndent
+	#static TEditorDialog _NEAR editorDialog;
+	#static ushort _NEAR editorFlags;
+	#static char _NEAR findStr[maxFindStrLen];
+	#static char _NEAR replaceStr[maxReplaceStrLen];
+	#static TEditor * _NEAR clipboard;
+	int lockCount
+	int updateFlags
+	int keyState
+      TWindow:
+	int flags
+	#TRect zoomRect;
+	int number
+	int palette
+	TFrame *frame
+	#const char *title;
 EOS
 }}}
 

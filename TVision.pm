@@ -448,6 +448,32 @@ package TVision::TFileList;
 package TVision::TFilterValidator;
 package TVision::TFindDialogRec;
 package TVision::TFrame;
+our @ISA = qw(TVision::TView);
+#class TFrame : public TView {
+#public:
+#    TFrame( const TRect& bounds ) noexcept;
+#    virtual void draw();
+#    virtual TPalette& getPalette() const;
+#    virtual void handleEvent( TEvent& event );
+#    virtual void setState( ushort aState, Boolean enable );
+#private:
+#    void frameLine( TDrawBuffer& frameBuf, short y, short n, TColorAttr color );
+#    void dragWindow( TEvent& event, uchar dragMode );
+#    friend class TDisplay;
+#    static const char _NEAR initFrame[19];
+#    static char _NEAR frameChars[33];
+#    static const char * _NEAR closeIcon;
+#    static const char * _NEAR zoomIcon;
+#    static const char * _NEAR unZoomIcon;
+#    static const char * _NEAR dragIcon;
+#    static const char * _NEAR dragLeftIcon;
+#    virtual const char *streamableName() const { return name; }
+#protected:
+#    TFrame( StreamableInit ) noexcept;
+#public:
+#    static const char * const _NEAR name;
+#    static TStreamable *build();
+#};
 package TVision::TGroup;
 our @ISA = qw(TVision::TView);
 #class TGroup : public TView {
@@ -856,12 +882,13 @@ package TVision::TTimerQueue;
 package TVision::TVMemMgr;
 package TVision::TValidator;
 package TVision::TView;
+our @ISA = qw(TVision::TObject);
 #class TView : public TObject, public TStreamable {
 #[ ]public:
 #[ ]    friend void genRefs();
 #[ ]    enum phaseType { phFocused, phPreProcess, phPostProcess };
 #[ ]    enum selectMode{ normalSelect, enterSelect, leaveSelect };
-#[ ]    TView( const TRect& bounds ) noexcept;
+#[x]    TView( const TRect& bounds ) noexcept;
 #[ ]    ~TView();
 #[ ]    virtual void sizeLimits( TPoint& min, TPoint& max );
 #[ ]    TRect getBounds() const noexcept;
@@ -870,8 +897,7 @@ package TVision::TView;
 #[ ]    Boolean mouseInView( TPoint mouse ) noexcept;
 #[ ]    Boolean containsMouse( TEvent& event ) noexcept;
 #[x]    void locate( TRect& bounds );
-#[ ]    virtual void dragView( TEvent& event, uchar mode,   //  temporary fix
-#[ ]      TRect& limits, TPoint minSize, TPoint maxSize ); //  for Miller's stuff
+#[ ]    virtual void dragView( TEvent& event, uchar mode, TRect& limits, TPoint minSize, TPoint maxSize ); // temporary fix for Miller's stuff
 #[ ]    virtual void calcBounds( TRect& bounds, TPoint delta );
 #[ ]    virtual void changeBounds( const TRect& bounds );
 #[ ]    void growTo( short x, short y );
