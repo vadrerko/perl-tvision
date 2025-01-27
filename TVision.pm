@@ -33,7 +33,24 @@ sub onCommand {
 
 package TVision::TVApp;
 our @ISA = qw(TVision::TApplication);
+
 package TVision::TApplication;
+our @ISA = qw(TVision::TProgram);
+#class TApplication : public virtual TSubsystemsInit, public TProgram {
+#protected:
+#    TApplication() noexcept;
+#    virtual ~TApplication();
+#public:
+#    virtual void suspend();
+#    virtual void resume();
+#    void cascade();
+#    void dosShell();
+#    virtual TRect getTileRect();
+#    virtual void handleEvent(TEvent &event);
+#    void tile();
+#    virtual void writeShellMsg();
+#};
+
 our $the_tapp;
 
 sub init {
@@ -47,8 +64,58 @@ sub init {
     });
 }
 
+package TVision::TProgInit;
+#class TProgInit {
+#public:
+#    TProgInit(TStatusLine *(*cStatusLine)(TRect), TMenuBar *(*cMenuBar)(TRect), TDeskTop *(*cDeskTop )(TRect))
+#protected:
+#    TStatusLine *(*createStatusLine)( TRect );
+#    TMenuBar *(*createMenuBar)( TRect );
+#    TDeskTop *(*createDeskTop)( TRect );
+#};
+
+package TVision::TProgram;
+our @ISA = qw(TVision::TGroup TVision::TProgInit);
+#class TProgram : public TGroup, public virtual TProgInit {
+#public:
+#    TProgram() noexcept;
+#    virtual ~TProgram();
+#    virtual Boolean canMoveFocus();
+#    virtual ushort executeDialog(TDialog*, void*data = 0);
+#    virtual void getEvent(TEvent& event);
+#    virtual TPalette& getPalette() const;
+#    virtual void handleEvent(TEvent& event);
+#    virtual void idle();
+#    virtual void initScreen();
+#    virtual void outOfMemory();
+#    virtual void putEvent( TEvent& event );
+#    virtual void run();
+#    virtual TWindow* insertWindow(TWindow*);
+#    void setScreenMode( ushort mode );
+#    TView *validView( TView *p ) noexcept;
+#    virtual void shutDown();
+#    virtual TTimerId setTimer( uint timeoutMs, int periodMs = -1 );
+#    virtual void killTimer( TTimerId id );
+#    virtual void suspend() {}
+#    virtual void resume() {}
+#    static TStatusLine *initStatusLine( TRect );
+#    static TMenuBar *initMenuBar( TRect );
+#    static TDeskTop *initDeskTop( TRect );
+#    static TProgram * _NEAR application;
+#    static TStatusLine * _NEAR statusLine;
+#    static TMenuBar * _NEAR menuBar;
+#    static TDeskTop * _NEAR deskTop;
+#    static int _NEAR appPalette;
+#    static int _NEAR eventTimeoutMs;
+#protected:
+#    static TEvent _NEAR pending;
+#private:
+#    static int eventWaitTimeout();
+#    static const char * _NEAR exitText;
+#    static TTimerQueue _NEAR timerQueue;
+#};
+
 package TVision::MsgBox;
-package TVision::TApplication;
 package TVision::TBackground;
 # class TBackground : public TView {...}
 our @ISA = qw(TVision::TView);
@@ -662,6 +729,7 @@ package TVision::TMenuView;
 #    static TStreamable *build();
 #};
 package TVision::TSubMenu;
+our @ISA = qw(TVision::TMenuItem);
 #class TSubMenu : public TMenuItem { 
 #public:
 #    TSubMenu( TStringView nm, TKey key, ushort helpCtx = hcNoContext ) noexcept;
@@ -681,7 +749,6 @@ package TVision::TPalette;
 package TVision::TParamText;
 package TVision::TPoint;
 #class TPoint { int x,y; };
-package TVision::TProgram;
 package TVision::TRadioButtons;
 #class TRadioButtons : public TCluster {
 #public:

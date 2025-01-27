@@ -66,20 +66,29 @@ TDeskTop* deskTop(TVApp *tapp)
     # constructors:
     use strict;
     join '', map {
-        my ($fun, $args) = /^\s*(\S+)\s*\(\s*(.*?)\s*\)/;
-	$args =~ s/TStringView/char */g;
-	my $trecta = $args=~s/^TRect// ? 'int _ax, int ay, int bx, int by' : '';
-	my $trectv = $trecta ? 'TRect(_ax,ay,bx,by)' : '';
-	my $argv = $args =~ s/(\w+\s*\*|int|char)//gr;
-    <<"EOS"
+        if (/^\s*#/) {()} # ignore comment
+	else {
+	    my ($fun, $args) = /^\s*(\S+)\s*\(\s*(.*?)\s*\)/;
+	    my $num = $fun=~s/(\d+)$// ? $1 : '';
+	    $args =~ s/TStringView/char */g;
+	    my $trecta = $args=~s/^TRect// ? 'int _ax, int ay, int bx, int by' : '';
+	    my $trectv = $trecta ? 'TRect(_ax,ay,bx,by)' : '';
+	    my $argv = $args =~ s/(\w+\s*\*|int|char)//gr =~ s/=.*?(?=(?:,|(?:\s*$)))//gr;
+	    $argv =~ tr|&|*|;
+	    $args =~ tr|&||d;
+	    # TKey TODO:
+	    $args =~ s/TKey/int/g;
+	    $argv =~ s/TKey +(\w+)/TKey($1)/g;
+	    <<"EOS"
 MODULE=TVision::$fun PACKAGE=TVision::$fun
-$fun* new($trecta $args)
+$fun* new$num($trecta $args)
     CODE:
         RETVAL = new $fun($trectv $argv);
     OUTPUT:
 	RETVAL
 
 EOS
+	}
     } split '\n', <<'EOS';
 	TBackground(TRect, char aPattern)
 	TDeskTop(TRect)
@@ -90,6 +99,10 @@ EOS
 	TIndicator(TRect)
 	TInputLine(TRect, int limit)
 	TMenu()
+	TMenu1( TMenuItem*& itemList )
+	TMenu2( TMenuItem*& itemList, TMenuItem*& TheDefault)
+	TMenuItem(TStringView aName, int aCommand, TKey aKey, int aHelpCtx=hcNoContext, TStringView p=0, TMenuItem *aNext=0)
+	TMenuItem1(TStringView aName, TKey aKey, TMenu *aSubMenu, int aHelpCtx=hcNoContext, TMenuItem *aNext=0)
 	TEditor(TRect, TScrollBar *sb1, TScrollBar *sb2, TIndicator *ind, int n)
 	TWindow(TRect, char *title, int num)
         TView(TRect)
@@ -129,6 +142,11 @@ EOS
 	}
     } split '\n', <<'EOS');
       TApplication:
+	void cascade()
+	void dosShell()
+	void tile()
+
+      TProgram:
 	void run()
 
       TView:
@@ -182,7 +200,6 @@ EOS
 	TView *nextView()
 	TView *prevView()
 	TView *prev()
-	##TView *next;
 	void makeFirst()
 	void putInFrontOf( TView *Target )
 	TView *TopView()
@@ -192,11 +209,6 @@ EOS
 	#void writeLine( short x, short y, short w, short h, const TDrawBuffer& b ) noexcept;
 	#void writeLine( short x, short y, short w, short h, const void _FAR *b ) noexcept;
 	#void writeStr( short x, short y, const char *str, uchar color ) noexcept;
-	# all below are - virtual
-	#virtual void sizeLimits( TPoint& min, TPoint& max );
-	#virtual void dragView( TEvent& event, uchar mode, TRect& limits, TPoint minSize, TPoint maxSize ); // temporary fix for Miller's stuff
-	#virtual void calcBounds( TRect& bounds, TPoint delta );
-	#virtual void changeBounds( const TRect& bounds );
 	int getHelpCtx()
 	int valid( int command )
 	void draw()
@@ -211,6 +223,11 @@ EOS
 	void endModal( int command )
 	int execute()
 	void setState( int aState, int enable )
+	# all below are - virtual
+	#virtual void sizeLimits( TPoint& min, TPoint& max );
+	#virtual void dragView( TEvent& event, uchar mode, TRect& limits, TPoint minSize, TPoint maxSize ); // temporary fix for Miller's stuff
+	#virtual void calcBounds( TRect& bounds, TPoint delta );
+	#virtual void changeBounds( const TRect& bounds );
 	#virtual TPalette& getPalette() const;
 	#virtual TColorAttr mapColor( uchar ) noexcept;
 	#virtual TTimerId setTimer( uint timeoutMs, int periodMs = -1 );
@@ -293,6 +310,8 @@ EOS
 	#TStringView bufChars( uint );
 	#TStringView prevBufChars( uint );
 
+      TMenuItem:
+        void append(TMenuItem *aNext)
       TGroup:
         void insert(TWindow *what)
 	void insertView(TView *p, TView *Target) /*???*/
@@ -371,6 +390,16 @@ EOS
 	int palette
 	TFrame *frame
 	#const char *title;
+      TView:
+	TView *next
+      TMenuItem:
+	TMenuItem *next
+	#const char *name
+	int command
+	int disabled
+	#TKey keyCode
+	int helpCtx
+
 EOS
 }}}
 
