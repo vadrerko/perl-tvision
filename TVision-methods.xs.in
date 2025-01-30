@@ -46,15 +46,23 @@
 
 #include "TVision.h"
 
-MODULE=TVision::TApplication PACKAGE=TVision::TApplication
+extern TStatusLine *default_TStatusLine;
+extern TMenuBar *default_TMenuBar;
 
-TVApp* new()
+MODULE=TVision::TVApp PACKAGE=TVision::TVApp
+
+TVApp* new(TMenuBar *tmbr=0, TStatusLine *tsl=0)
     CODE:
+        if (tmbr)
+	    default_TMenuBar = tmbr;
+	default_TStatusLine = tsl;
         RETVAL = new TVApp();
         // RETVAL = get_sv("TVision::TApplication::the_app", GV_ADD);
 	//do_sv_dump(0, PerlIO_stderr(), RETVAL, 0, 10, 0,0);
     OUTPUT:
 	RETVAL
+
+MODULE=TVision::TApplication PACKAGE=TVision::TApplication
 
 TDeskTop* deskTop(TVApp *tapp)
     CODE:
@@ -103,6 +111,7 @@ EOS
 	TMenu2( TMenuItem*& itemList, TMenuItem*& TheDefault)
 	TMenuItem(TStringView aName, int aCommand, TKey aKey, int aHelpCtx=hcNoContext, TStringView p=0, TMenuItem *aNext=0)
 	TMenuItem1(TStringView aName, TKey aKey, TMenu *aSubMenu, int aHelpCtx=hcNoContext, TMenuItem *aNext=0)
+	TSubMenu( TStringView nm, TKey key, int helpCtx = hcNoContext )
 	TEditor(TRect, TScrollBar *sb1, TScrollBar *sb2, TIndicator *ind, int n)
 	TWindow(TRect, char *title, int num)
         TView(TRect)
@@ -148,6 +157,8 @@ EOS
 
       TProgram:
 	void run()
+	void setScreenMode(int mode)
+	TView *validView(TView *p)
 
       TView:
 	void locate(TView *w, TRect) TRect r(_ax,ay,bx,by); w->locate(r);
@@ -392,6 +403,13 @@ EOS
 	#const char *title;
       TView:
 	TView *next
+      TProgram:
+	TProgram *application
+	TStatusLine *statusLine
+	TMenuBar *menuBar
+	TDeskTop *deskTop
+	int appPalette
+	int eventTimeoutMs
       TMenuItem:
 	TMenuItem *next
 	#const char *name
@@ -465,15 +483,6 @@ TEditor* new_obsoleted(int _ax, int ay, int bx, int by, TScrollBar *sb1, TScroll
     CODE:
 	if (sb1==NULL){printf("ok got NULL\n");}
         RETVAL = new TEditor(TRect(_ax,ay,bx,by),sb1,sb2,ind, n);
-    OUTPUT:
-	RETVAL
-
-MODULE=TVision::TSubMenu PACKAGE=TVision::TSubMenu
-
-TSubMenu* new(char *nm, int key, int helpCtx = hcNoContext)
-    CODE:
-	// TSubMenu(TStringView nm, TKey key, ushort helpCtx = hcNoContext);
-        RETVAL = new TSubMenu(TStringView(nm),key,helpCtx);
     OUTPUT:
 	RETVAL
 

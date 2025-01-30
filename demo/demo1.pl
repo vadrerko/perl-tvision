@@ -1,7 +1,7 @@
 use strict;
 use TVision;
 
-my $tapp = TVision::TApplication::new;
+my $tapp = TVision::TVApp::new;
 my $desktop = $tapp->deskTop;
 my $w = TVision::TWindow::new(1,1,120,15,'моё окно, товарищи',5);
 my $w2 = TVision::TWindow::new(16,1,120,30,'моё окно, товарищи',5);

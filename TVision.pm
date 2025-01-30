@@ -16,6 +16,11 @@ onCommand event. If 0 - then next availlable is taken.
 examples:
 =cut
 
+#TODO:
+#TSubMenu& operator + ( TSubMenu& s, TMenuItem& i ) noexcept;
+#TSubMenu& operator + ( TSubMenu& s1, TSubMenu& s2 ) noexcept;
+#TMenuItem& operator + ( TMenuItem& i1, TMenuItem& i2 ) noexcept;
+
 package TVision::WidgetWithOnCommand;
 # this isn't on classical turbovision, this package is the central place
 # for widgets with onCommand capability
@@ -663,6 +668,7 @@ package TVision::TMenu;
 #    TMenuItem *deflt;
 #};
 package TVision::TMenuBar;
+our @ISA = qw(TVision::TMenuView);
 #class TMenuBar : public TMenuView {
 #public:
 #    TMenuBar( const TRect& bounds, TMenu *aMenu ) noexcept;
@@ -713,7 +719,8 @@ package TVision::TMenuPopup;
 #};
 
 package TVision::TMenuView;
-#class TMenuView : public TView { 
+our @ISA = qw(TVision::TView);
+#class TMenuView : public Tiew {
 #public:
 #    TMenuView( const TRect& bounds, TMenu *aMenu, TMenuView *aParent = 0 ) noexcept;
 #    TMenuView( const TRect& bounds ) noexcept;
@@ -734,7 +741,6 @@ our @ISA = qw(TVision::TMenuItem);
 #public:
 #    TSubMenu( TStringView nm, TKey key, ushort helpCtx = hcNoContext ) noexcept;
 #};
-
 
 
 package TVision::TMonoSelector;

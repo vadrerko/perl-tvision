@@ -42,6 +42,11 @@ CV *cv_on_idle = 0;
 CV *cv_handleEvent = 0;
 CV *cv_onCommand = 0;
 
+TStatusLine *default_TStatusLine=0;
+TMenuBar *default_TMenuBar=0;
+
+TMenuItem menu_newLine = newLine();
+
 TVApp *tapp = NULL;
 TVApp::TVApp() :
     TProgInit( &TVApp::initStatusLine,
@@ -175,6 +180,9 @@ const int cmEventViewCmd= 112;
 
 
 TMenuBar *TVApp::initMenuBar(TRect r) {
+    printf("(%d,%d)-(%d,%d)\n",r.a.x, r.a.y,r.b.x,r.b.y);
+    if (default_TMenuBar)
+	return default_TMenuBar;
     TSubMenu& sub1 =
       *new TSubMenu( "~\xf0~", 0, hcSystem ) +
         *new TMenuItem( "~A~bout...", cmAboutCmd, kbNoKey, hcSAbout ) +
@@ -286,6 +294,37 @@ TEditWindow* new(int _ax, int ay, int bx, int by, char *title, int num)
 	RETVAL
 #endif
 
+MODULE=TVision::TMenuItem PACKAGE=TVision::TMenuItem
+
+TMenuItem *newLine()
+    CODE:
+        RETVAL = &menu_newLine;
+    OUTPUT:
+	RETVAL
+
+TMenuItem *plus(TMenuItem *self, TMenuItem *what)
+    CODE:
+	TMenuItem sum = *self+*what;
+        RETVAL = &sum;
+    OUTPUT:
+	RETVAL
+
+MODULE=TVision::TSubMenu PACKAGE=TVision::TSubMenu
+
+TSubMenu *plus(TSubMenu *self, TMenuItem *what)
+    CODE:
+	TSubMenu sum = *self+*what;
+        RETVAL = &sum;
+    OUTPUT:
+	RETVAL
+
+TSubMenu *plus_sm(TSubMenu *self, TSubMenu *what)
+    CODE:
+	TSubMenu sum = *self+*what;
+        RETVAL = &sum;
+    OUTPUT:
+	RETVAL
+
 MODULE=TVision::TDeskTop PACKAGE=TVision::TDeskTop
 
 void insert_obsoleted(SV *self, SV *what)
@@ -302,5 +341,5 @@ BOOT:
     new_tv_a(tvnull, "TVision");
     sv_setsv(get_sv("TVision::NULL", GV_ADD), rself);
     extern void boot_TVision_more();
-    boot_TVision_more(); /* for TVision-method.xs */
+    boot_TVision_more(); /* for TVision-methods.xs */
 
