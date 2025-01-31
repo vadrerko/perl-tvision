@@ -266,25 +266,6 @@ char *getData(TInputLine *til)
     OUTPUT:
 	RETVAL
 
-MODULE=TVision::TMenuBar PACKAGE=TVision::TMenuBar
-
-TMenuBar* new(int _ax, int ay, int bx, int by, SV *TMenu_or_TSubMenu)
-    CODE:
-        TRect r(_ax,ay,bx,by);
-	TMenuBar *w;
-	if (sv_isa(TMenu_or_TSubMenu, "TVision::TMenu")) {
-	    TMenu *m = *((TMenu**) SvPV_nolen(TMenu_or_TSubMenu));
-	    w = new TMenuBar(r,m);
-	} else if (sv_isa(TMenu_or_TSubMenu, "TVision::TSubMenu")) {
-	    TSubMenu sm = **((TSubMenu**) SvPV_nolen(TMenu_or_TSubMenu));
-	    w = new TMenuBar(r,sm);
-	} else {
-	    croak("wrong inheritance in TVision::TMenuBar::new");
-	}
-        RETVAL = w;
-    OUTPUT:
-	RETVAL
-
 #if 0
 MODULE=TVision::TEditWindow PACKAGE=TVision::TEditWindow
 TEditWindow* new(int _ax, int ay, int bx, int by, char *title, int num)

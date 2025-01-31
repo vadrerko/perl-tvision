@@ -106,6 +106,8 @@ EOS
 	TScrollBar(TRect)
 	TIndicator(TRect)
 	TInputLine(TRect, int limit)
+	TMenuBar(TRect, TSubMenu* &aMenu)
+	TMenuBar1(TRect, TMenu *aMenu)
 	TMenu()
 	TMenu1( TMenuItem*& itemList )
 	TMenu2( TMenuItem*& itemList, TMenuItem*& TheDefault)
@@ -483,25 +485,6 @@ TEditor* new_obsoleted(int _ax, int ay, int bx, int by, TScrollBar *sb1, TScroll
     CODE:
 	if (sb1==NULL){printf("ok got NULL\n");}
         RETVAL = new TEditor(TRect(_ax,ay,bx,by),sb1,sb2,ind, n);
-    OUTPUT:
-	RETVAL
-
-MODULE=TVision::TMenuBar PACKAGE=TVision::TMenuBar
-
-TMenuBar* new(int _ax, int ay, int bx, int by, SV *TMenu_or_TSubMenu)
-    CODE:
-        TRect r(_ax,ay,bx,by);
-	TMenuBar *w;
-	if (sv_isa(TMenu_or_TSubMenu, "TVision::TMenu")) {
-	    TMenu *m = *((TMenu**) SvPV_nolen(TMenu_or_TSubMenu));
-	    w = new TMenuBar(r,m);
-	} else if (sv_isa(TMenu_or_TSubMenu, "TVision::TSubMenu")) {
-	    TSubMenu sm = **((TSubMenu**) SvPV_nolen(TMenu_or_TSubMenu));
-	    w = new TMenuBar(r,sm);
-	} else {
-	    croak("wrong inheritance in TVision::TMenuBar::new");
-	}
-        RETVAL = w;
     OUTPUT:
 	RETVAL
 

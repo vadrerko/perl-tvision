@@ -109,20 +109,22 @@ use constant {
 
 
 #my $menubar = $tapp->get_menuBar;
+  my $mi1 = TVision::TMenuItem::new( "~A~bout...", cmAboutCmd, kbNoKey, hcSAbout );
 
-my $sub1 = TVision::TSubMenu::new( "~\xf0~wwjlwhjwlhwj", 0, hcSystem )
+my $sub1 = TVision::TSubMenu::new( "~\xf0~тут системно", 0, hcSystem )
   #-> plus ( TVision::TMenuItem::new( "~A~bout...", cmAboutCmd, kbNoKey, hcSAbout ) )
-#       -> plus (
-#           TVision::TMenuItem::newLine()
-#       ) 
-#       -> plus (
-#	    TVision::TMenuItem::new( "~E~vent Viewer", cmEventViewCmd, kbAlt0, hcNoContext, "Alt-0" )
-#	);
+  #-> plus ( TVision::TMenuItem::newLine())
+  #-> plus ( TVision::TMenuItem::new( "~E~vent Viewer", cmEventViewCmd, kbAlt0, hcNoContext, "Alt-0" ))
 ;
+my $sub2 = TVision::TSubMenu::new( "~т~ут ещё", 0, 0 );
 
-my $menubar = TVision::TMenuItem::new(0,0,179,1,$sub1);
+  #print "b4\n";
+  #$sub1 -> plus ( $mi1 );
+  #print "a41\n";
+  #$sub1->plus_sm($sub2);
+  #print "a4\n";
+my $menubar = TVision::TMenuBar::new(0,0,179,1,$sub2);
 my $tapp = TVision::TVApp::new($menubar);
-#my $tapp = TVision::TVApp::new();
 
 =ignore
     TSubMenu& sub2 =
