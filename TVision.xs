@@ -45,8 +45,6 @@ CV *cv_onCommand = 0;
 TStatusLine *default_TStatusLine=0;
 TMenuBar *default_TMenuBar=0;
 
-TMenuItem menu_newLine = newLine();
-
 TVApp *tapp = NULL;
 TVApp::TVApp() :
     TProgInit( &TVApp::initStatusLine,
@@ -279,7 +277,7 @@ MODULE=TVision::TMenuItem PACKAGE=TVision::TMenuItem
 
 TMenuItem *newLine()
     CODE:
-        RETVAL = &menu_newLine;
+	RETVAL = &newLine();
     OUTPUT:
 	RETVAL
 
@@ -292,7 +290,28 @@ TMenuItem *plus(TMenuItem *self, TMenuItem *what)
 
 MODULE=TVision::TSubMenu PACKAGE=TVision::TSubMenu
 
-TSubMenu *plus(TSubMenu *self, TMenuItem *what)
+SV* plus(SV *submenu, SV *sm_or_mi)
+    CODE:
+       if (sv_isa(submenu, "TVision::TSubMenu")) {
+           TSubMenu *sm = (TSubMenu*)sv2tv_a(submenu);
+	   if (sv_isa(sm_or_mi, "TVision::TSubMenu")) {
+	       TSubMenu *sm2 = (TSubMenu*)sv2tv_a(sm_or_mi);
+	       *sm + *sm2;
+	   } else if (sv_isa(sm_or_mi, "TVision::TMenuItem")) {
+	       TMenuItem *mi = (TMenuItem*)sv2tv_a(sm_or_mi);
+	       *sm + *mi;
+	   } else {
+	       croak("TSubmenu::plus 2st arg should be of type TSubMenu or TMenuItem");
+	   }
+       } else {
+           croak("TSubmenu::plus 1st arg should be of type TSubMenu");
+       }
+       /* according to RTFS, addition will return the same object, so do we */
+       RETVAL = submenu;
+    OUTPUT:
+       RETVAL
+
+TSubMenu *plus_obsoleted(TSubMenu *self, TMenuItem *what)
     CODE:
 	TSubMenu sum = *self+*what;
         RETVAL = &sum;

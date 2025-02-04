@@ -35,5 +35,5 @@ public:
     static TMenuBar *initMenuBar( TRect r );
     virtual void handleEvent(TEvent& Event);
     virtual void getEvent(TEvent& event);
-    virtual void idle();              // Updates heap and clock views
+    virtual void idle();
 };

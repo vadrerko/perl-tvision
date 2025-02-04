@@ -105,57 +105,40 @@ use constant {
   cmSaveCmd              => 110,
   cmRestoreCmd           => 111,
   cmEventViewCmd         => 112,
+
+        cmResize => 120,
+        cmZoom => 120,
+        cmNext => 120,
+        cmClose => 120,
+        cmTile => 120,
+        cmCascade => 120,
 };
 
-
-#my $menubar = $tapp->get_menuBar;
-  my $mi1 = TVision::TMenuItem::new( "~A~bout...", cmAboutCmd, kbNoKey, hcSAbout );
-
 my $sub1 = TVision::TSubMenu::new( "~\xf0~тут системно", 0, hcSystem )
-  #-> plus ( TVision::TMenuItem::new( "~A~bout...", cmAboutCmd, kbNoKey, hcSAbout ) )
-  #-> plus ( TVision::TMenuItem::newLine())
-  #-> plus ( TVision::TMenuItem::new( "~E~vent Viewer", cmEventViewCmd, kbAlt0, hcNoContext, "Alt-0" ))
+  -> plus ( TVision::TMenuItem::new( "~A~bout...", cmAboutCmd, kbNoKey, hcSAbout ) )
+  -> plus ( TVision::TSubMenu::new( "~т~ут ещё", 0, 0 )
+      -> plus ( TVision::TMenuItem::new( "~A~bout 2...", cmAboutCmd, kbNoKey, hcSAbout ) )
+  -> plus ( TVision::TMenuItem::newLine())
+  -> plus ( TVision::TMenuItem::newLine())
+  -> plus ( TVision::TMenuItem::newLine())
+      -> plus ( TVision::TMenuItem::new( "~A~bout 3...", cmAboutCmd, kbNoKey, hcSAbout ) )
+  )
+  -> plus ( TVision::TMenuItem::newLine())
+  -> plus ( TVision::TMenuItem::newLine())
+  -> plus ( TVision::TMenuItem::newLine())
+  -> plus ( TVision::TMenuItem::new( "~E~vent Viewer", cmEventViewCmd, kbAlt0, hcNoContext, "Alt-0" ))
+  -> plus ( TVision::TSubMenu::new( "~W~indows", 0, hcWindows )
+        -> plus ( TVision::TMenuItem::new( "~R~esize/move", cmResize, kbCtrlF5, hcWSizeMove, "Ctrl-F5" ) )
+        -> plus ( TVision::TMenuItem::new( "~Z~oom", cmZoom, kbF5, hcWZoom, "F5" ) )
+        -> plus ( TVision::TMenuItem::new( "~N~ext", cmNext, kbF6, hcWNext, "F6" ) )
+        -> plus ( TVision::TMenuItem::new( "~C~lose", cmClose, kbAltF3, hcWClose, "Alt-F3" ) )
+        -> plus ( TVision::TMenuItem::new( "~T~ile", cmTile, kbNoKey, hcWTile ) )
+        -> plus ( TVision::TMenuItem::new( "C~a~scade", cmCascade, kbNoKey, hcWCascade ) )
+     )
 ;
-my $sub2 = TVision::TSubMenu::new( "~т~ут ещё", 0, 0 );
 
-  #print "b4\n";
-  #$sub1 -> plus ( $mi1 );
-  #print "a41\n";
-  #$sub1->plus_sm($sub2);
-  #print "a4\n";
-my $menubar = TVision::TMenuBar::new(0,0,179,1,$sub2);
+my $menubar = TVision::TMenuBar::new(0,0,179,1,$sub1);
 my $tapp = TVision::TVApp::new($menubar);
-
-=ignore
-    TSubMenu& sub2 =
-      *new TSubMenu( "~F~ile", 0, hcFile ) +
-        *new TMenuItem( "~O~pen...", cmOpenCmd, kbF3, hcFOpen, "F3" ) +
-        *new TMenuItem( "~C~hange Dir...", cmChDirCmd, kbNoKey, hcFChangeDir ) +
-         newLine() +
-        *new TMenuItem( "~D~OS Shell", cmDosShell, kbNoKey, hcFDosShell ) +
-        *new TMenuItem( "E~x~it", cmQuit, kbAltX, hcFExit, "Alt-X" );
-
-    TSubMenu& sub3 =
-      *new TSubMenu( "~W~indows", 0, hcWindows ) +
-        *new TMenuItem( "~R~esize/move", cmResize, kbCtrlF5, hcWSizeMove, "Ctrl-F5" ) +
-        *new TMenuItem( "~Z~oom", cmZoom, kbF5, hcWZoom, "F5" ) +
-        *new TMenuItem( "~N~ext", cmNext, kbF6, hcWNext, "F6" ) +
-        *new TMenuItem( "~C~lose", cmClose, kbAltF3, hcWClose, "Alt-F3" ) +
-        *new TMenuItem( "~T~ile", cmTile, kbNoKey, hcWTile ) +
-        *new TMenuItem( "C~a~scade", cmCascade, kbNoKey, hcWCascade );
-
-    TSubMenu& sub4 =
-      *new TSubMenu( "~O~ptions", 0, hcOptions ) +
-        *new TMenuItem( "~M~ouse...", cmMouseCmd, kbNoKey, hcOMouse ) +
-        (TMenuItem&) (
-            *new TSubMenu( "~D~esktop", 0 ) +
-            *new TMenuItem( "~S~ave desktop", cmSaveCmd, kbNoKey, hcOSaveDesktop ) +
-            *new TMenuItem( "~R~etrieve desktop", cmRestoreCmd, kbNoKey, hcORestoreDesktop )
-        );
-
-    r.b.y =  r.a.y + 1;
-    return (new TMenuBar( r, sub1 + sub2 + sub3 + sub4 ) );
-=cut
 
 my $desktop = $tapp->deskTop;
 $tapp->onCommand(my $sub = sub {
