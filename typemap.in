@@ -54,11 +54,21 @@ O_TButton
 =cut
 ''}}}
 TYPEMAP
+TRect O_TRect
 {{{
 join '', map {"$_*  O_$_\n"} @tclasses;
 }}}
 
 INPUT
+O_TRect
+    AV *_av = (AV*) SvRV($arg);
+    SV** _f0 = av_fetch(_av, 0, 0);
+    SV** _f1 = av_fetch(_av, 1, 0);
+    SV** _f2 = av_fetch(_av, 2, 0);
+    SV** _f3 = av_fetch(_av, 3, 0);
+    if (!_f0 || !_f1 || !_f2 || !_f3)
+	croak(\"self[0] does not contain tvision object\");
+    $var = TRect(SvIV(*_f0),SvIV(*_f1),SvIV(*_f2),SvIV(*_f3));
 {{{
 join '', map {<<"EOS"} @tclasses;
 O_$_
@@ -77,6 +87,14 @@ O_Xxxxx
     av_store(self, 0, newSVpvn((const char *)&$var, sizeof($var)));
     $arg = newRV_inc((SV*) self);
     sv_bless($arg, gv_stashpv("$Package", GV_ADD));
+O_TRect
+    AV *_self = newAV();
+    av_store(_self, 0, newSViv($var.a.x));
+    av_store(_self, 1, newSViv($var.a.y));
+    av_store(_self, 2, newSViv($var.b.x));
+    av_store(_self, 3, newSViv($var.b.y));
+    $arg = newRV_inc((SV*) _self);
+    sv_bless($arg, gv_stashpv("TVision::TRect", GV_ADD));
 {{{
 join '', map {"O_$_\n" . <<'EOS' . ($_ eq 'TButton'?<<'EOS':'')} @tclasses;
     AV *self = newAV();

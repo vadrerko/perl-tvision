@@ -71,7 +71,7 @@ TDeskTop* deskTop(TVApp *tapp)
 	RETVAL
 
 {{{
-    # constructors:
+    #constructors:
     use strict;
     join '', map {
         if (/^\s*#/) {()} # ignore comment
@@ -79,9 +79,7 @@ TDeskTop* deskTop(TVApp *tapp)
 	    my ($fun, $args) = /^\s*(\S+)\s*\(\s*(.*?)\s*\)/;
 	    my $num = $fun=~s/(\d+)$// ? $1 : '';
 	    $args =~ s/TStringView/char */g;
-	    my $trecta = $args=~s/^TRect// ? 'int _ax, int ay, int bx, int by' : '';
-	    my $trectv = $trecta ? 'TRect(_ax,ay,bx,by)' : '';
-	    my $argv = $args =~ s/(\w+\s*\*|int|char)//gr =~ s/=.*?(?=(?:,|(?:\s*$)))//gr;
+	    my $argv = $args =~ s/(\w+\s*\*|int|char|TRect)//gr =~ s/=.*?(?=(?:,|(?:\s*$)))//gr;
 	    $argv =~ tr|&|*|;
 	    $args =~ tr|&||d;
 	    # TKey TODO:
@@ -89,36 +87,36 @@ TDeskTop* deskTop(TVApp *tapp)
 	    $argv =~ s/TKey +(\w+)/TKey($1)/g;
 	    <<"EOS"
 MODULE=TVision::$fun PACKAGE=TVision::$fun
-$fun* new$num($trecta $args)
+$fun* new$num($args)
     CODE:
-        RETVAL = new $fun($trectv $argv);
+        RETVAL = new $fun($argv);
     OUTPUT:
 	RETVAL
 
 EOS
 	}
     } split '\n', <<'EOS';
-	TBackground(TRect, char aPattern)
-	TDeskTop(TRect)
-	TScroller(TRect, TScrollBar *aHScrollBar, TScrollBar *aVScrollBar)
-	TLabel(TRect, TStringView aText, TView *aLink )
-	TButton(TRect, char *title, int cmd, int flags)
-	TScrollBar(TRect)
-	TIndicator(TRect)
-	TInputLine(TRect, int limit)
-	TMenuBar(TRect, TSubMenu* &aMenu)
-	TMenuBar1(TRect, TMenu *aMenu)
+	TBackground(TRect r, char aPattern)
+	TDeskTop(TRect r)
+	TScroller(TRect r, TScrollBar *aHScrollBar, TScrollBar *aVScrollBar)
+	TLabel(TRect r, TStringView aText, TView *aLink )
+	TButton(TRect r, char *title, int cmd, int flags)
+	TScrollBar(TRect r)
+	TIndicator(TRect r)
+	TInputLine(TRect r, int limit)
+	TMenuBar(TRect r, TSubMenu* &aMenu)
+	TMenuBar1(TRect r, TMenu *aMenu)
 	TMenu()
 	TMenu1( TMenuItem*& itemList )
 	TMenu2( TMenuItem*& itemList, TMenuItem*& TheDefault)
 	TMenuItem(TStringView aName, int aCommand, TKey aKey, int aHelpCtx=hcNoContext, TStringView p=0, TMenuItem *aNext=0)
 	TMenuItem1(TStringView aName, TKey aKey, TMenu *aSubMenu, int aHelpCtx=hcNoContext, TMenuItem *aNext=0)
 	TSubMenu( TStringView nm, TKey key, int helpCtx = hcNoContext )
-	TEditor(TRect, TScrollBar *sb1, TScrollBar *sb2, TIndicator *ind, int n)
-	TWindow(TRect, char *title, int num)
-        TView(TRect)
-	TDialog(TRect, char *title)
-	TStaticText(TRect, char *title)
+	TEditor(TRect r, TScrollBar *sb1=0, TScrollBar *sb2=0, TIndicator *ind=0, int n=1000)
+	TWindow(TRect r, char *title, int num)
+        TView(TRect r)
+	TDialog(TRect r, char *title)
+	TStaticText(TRect r, char *title)
 EOS
 }}}
 {{{
@@ -135,10 +133,8 @@ EOS
 	    my $output = $fun =~ /^void/ ? '' : "    OUTPUT:\n        RETVAL\n";;
 	    my $funa = $fun =~ s/^\S+\s*//r =~ tr/*//dr;
 	    $args =~ s/TStringView/char */g;
-	    my $trectp = $args =~ s/TRect/int _ax, int ay, int bx, int by/g;
-	    my $argv = $args =~ s/(\w+\s*\*|\bint|\bchar\b|\bshort\b)//gr;
+	    my $argv = $args =~ s/(\w+\s*\*|\bint|\bchar\b|\bshort\b|\TRect)//gr;
 	    my $comap =  $args =~ /^\s*$/ ? "" : ",";
-	    $argv =~ s/_ax,  ay,  bx,  by/TRect(_ax,  ay,  bx,  by)/g; # if $trectp;
 	    $args = "$pkg *self$comap$args";
 	    if ($body =~ /^\s*$/) { $body = ($output? "RETVAL = " : "") . "self->$funa($argv);"; }
 	    my $line0 = $first ? "MODULE=TVision::$pkg PACKAGE=TVision::$pkg" : "";
@@ -163,19 +159,18 @@ EOS
 	TView *validView(TView *p)
 
       TView:
-	void locate(TView *w, TRect) TRect r(_ax,ay,bx,by); w->locate(r);
+	void locate(TRect r)
 	#friend - do not do it - void genRefs()
 	#enum phaseType { phFocused, phPreProcess, phPostProcess };
 	#enum selectMode{ normalSelect, enterSelect, leaveSelect };
-	#TRect getBounds() const noexcept;
-	#TRect getExtent() const noexcept;
-	#TRect getClipRect() const noexcept;
+	TRect getBounds()
+	TRect getExtent()
+	TRect getClipRect()
 	#Boolean mouseInView( TPoint mouse ) noexcept;
 	#Boolean containsMouse( TEvent& event ) noexcept;
-	#void locate( TRect& bounds );
 	void growTo( short x, short y )
 	void moveTo( short x, short y )
-	void setBounds(TRect)
+	void setBounds(TRect r)
 	void hide()
 	void show()
 	void drawView()
@@ -184,7 +179,7 @@ EOS
 	void hideCursor()
 	void drawHide( TView *lastView )
 	void drawShow( TView *lastView )
-	void drawUnderRect( TRect, TView *lastView ) TRect r(_ax,  ay,  bx,  by); self->drawUnderRect( r, lastView);
+	void drawUnderRect(TRect r, TView *lastView ) self->drawUnderRect( r, lastView);
 	void drawUnderView( int doShadow, TView *lastView )
 	void blockCursor()
 	void normalCursor()
@@ -246,10 +241,14 @@ EOS
 	#virtual TTimerId setTimer( uint timeoutMs, int periodMs = -1 );
 	#virtual void killTimer( TTimerId id );
 
+      TScroller:
+        void scrollTo( int x, int y )
+        void setLimit( int x, int y )
+
       TWindow:
 	TScrollBar *standardScrollBar( int aOptions )
-	#virtual void zoom();
-	#virtual void shutDown();
+	void zoom()
+	void shutDown()
 
       TEditor:
 	char bufChar( int a)
@@ -346,7 +345,6 @@ EOS
 	else {
 	    my ($type, $var) = /^\s*(.+)\s+(\S+)/;
 	    if ($var=~s/^\*//) {$type.='*'}
-	    #my $trectp = $args =~ s/TRect/int _ax, int ay, int bx, int by/g;
 	    my $line0 = $first ? "MODULE=TVision::$pkg PACKAGE=TVision::$pkg" : "";
 	    $first=0;
 	<<"EOS"
@@ -419,7 +417,6 @@ EOS
 	int disabled
 	#TKey keyCode
 	int helpCtx
-
 EOS
 }}}
 
@@ -447,7 +444,7 @@ char *getData(TInputLine *til)
 
 MODULE=TVision::TCheckBoxes PACKAGE=TVision::TCheckBoxes
 
-TCheckBoxes* new(int _ax, int ay, int bx, int by, AV *_items)
+TCheckBoxes* new(TRect r,  AV *_items)
     CODE:
         int cnt = av_count(_items);
 	//printf("items=%d\n",cnt);
@@ -458,13 +455,13 @@ TCheckBoxes* new(int _ax, int ay, int bx, int by, AV *_items)
 	    TSItem *n = new TSItem(SvPV_nolen(*sv), tsit);
 	    tsit = n;
 	}
-        RETVAL = new TCheckBoxes(TRect(_ax,ay,bx,by), tsit);
+        RETVAL = new TCheckBoxes(r, tsit);
     OUTPUT:
 	RETVAL
 
 MODULE=TVision::TRadioButtons PACKAGE=TVision::TRadioButtons
 
-TRadioButtons* new(int _ax, int ay, int bx, int by, AV *_items)
+TRadioButtons* new(TRect r, AV *_items)
     CODE:
         int cnt = av_count(_items);
 	//printf("items=%d\n",cnt);
@@ -475,7 +472,7 @@ TRadioButtons* new(int _ax, int ay, int bx, int by, AV *_items)
 	    TSItem *n = new TSItem(SvPV_nolen(*sv), tsit);
 	    tsit = n;
 	}
-        RETVAL = new TRadioButtons(TRect(_ax,ay,bx,by), tsit);
+        RETVAL = new TRadioButtons(r, tsit);
     OUTPUT:
 	RETVAL
 

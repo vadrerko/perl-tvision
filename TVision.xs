@@ -301,10 +301,10 @@ SV* plus(SV *submenu, SV *sm_or_mi)
 	       TMenuItem *mi = (TMenuItem*)sv2tv_a(sm_or_mi);
 	       *sm + *mi;
 	   } else {
-	       croak("TSubmenu::plus 2st arg should be of type TSubMenu or TMenuItem");
+	       croak("TSubmenu::plus arg should be of type TSubMenu or TMenuItem");
 	   }
        } else {
-           croak("TSubmenu::plus 1st arg should be of type TSubMenu");
+           croak("TSubmenu::plus wrong inheritance");
        }
        /* according to RTFS, addition will return the same object, so do we */
        RETVAL = submenu;
@@ -333,6 +333,15 @@ void insert_obsoleted(SV *self, SV *what)
         SV *sv = SvRV(what);
         TWindow* w = *((TWindow**) SvPV_nolen(sv));
 	td->insert(w);
+
+MODULE=TVision::TView PACKAGE=TVision::TView
+
+TRect getExtent(TView *self)
+    CODE:
+        RETVAL = self->getExtent();
+	printf("%d,%d,%d,%d\n",RETVAL.a.x,RETVAL.a.y,RETVAL.b.x,RETVAL.b.y);
+    OUTPUT:
+	RETVAL
 
 MODULE=TVision PACKAGE=TVision
 
