@@ -35,6 +35,7 @@
 #define Uses_TMenuItem
 #define Uses_TMenuBar
 #define Uses_TSubMenu
+#define Uses_THistory
 
 #include <tvision/tv.h>
 
@@ -117,6 +118,8 @@ EOS
         TView(TRect r)
 	TDialog(TRect r, char *title)
 	TStaticText(TRect r, char *title)
+	THistory( TRect bounds, TInputLine *aLink, int aHistoryId )
+	TSItem( TStringView aValue, TSItem *aNext )
 EOS
 }}}
 {{{
@@ -327,6 +330,11 @@ EOS
       TGroup:
         void insert(TWindow *what)
 	void insertView(TView *p, TView *Target) /*???*/
+        void remove( TView *p )
+        void removeView( TView *p )
+        void resetCurrent()
+        #void setCurrent( TView *p, selectMode mode )
+        void selectNext( int forwards )
       TInputLine:
         void setData(char *data)
       TButton:
@@ -403,6 +411,16 @@ EOS
 	#const char *title;
       TView:
 	TView *next
+        #TPoint size
+        int options
+        int eventMask
+        int state
+        #TPoint origin
+        #TPoint cursor
+        int growMode
+        int dragMode
+        int helpCtx
+        TGroup *owner
       TProgram:
 	TProgram *application
 	TStatusLine *statusLine

@@ -36,6 +36,7 @@
     TMenuBar
     TSubMenu
     TValidator
+    THistory
 );
 
 =comment
