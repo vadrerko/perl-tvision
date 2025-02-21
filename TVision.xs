@@ -245,17 +245,6 @@ SV* _new_h(int _ax, int ay, int bx, int by, char *title, int cmd, int flags)
     OUTPUT:
 	RETVAL
 
-void setTitle(TButton *w, char *title)
-    CODE:
-	delete w->title;
-	w->title = new char[strlen(title)+1];
-	strcpy((char*)w->title,title);
-	w->draw();
-
-void setData(TInputLine *til, char *data)
-    CODE:
-	til->setData(data);
-
 char *getData(TInputLine *til)
     CODE:
 	char data[2048]; // OMG2

@@ -1344,6 +1344,13 @@ $commands = {
 # Event masks
     #TODO positionalEvents    => evMouse & ~evMouseWheel,
     #TODO focusedEvents       => evKeyboard | evCommand;
+# BUTTON_TYPE
+    bfNormal    => 0x00,
+    bfDefault   => 0x01,
+    bfLeftJust  => 0x02,
+    bfBroadcast => 0x04,
+    bfGrabFocus => 0x08,
+    cmRecordHistory => 60,
 };
 
 }
@@ -1356,9 +1363,10 @@ our %EXPORT_TAGS=(
     keys     => [ keys %$keys ],
     commands => [ keys %$commands ],
 );
-our @EXPORT_OK = keys %$keys;
+our @EXPORT_OK = ((keys %$keys), (keys %$commands));
 
 use constant $keys;
+use constant $commands;
 
 1;
 

@@ -1,5 +1,5 @@
 use strict;
-use TVision (':keys');
+use TVision (':keys', 'tnew');
 
 use constant {
   hcCancelBtn            => 35,
@@ -51,8 +51,8 @@ use constant {
         cmCascade => 120,
 };
 
-my $submenu0 = TVision::TSubMenu::new("~s~ubmenu", 0, 0 );
-my @mi = map {TVision::TMenuItem::new( 'aaa', 201, kbNoKey)} 0 .. 3;
+my $submenu0 = tnew(TSubMenu=>"~s~ubmenu", 0, 0 );
+my @mi = map {tnew(TMenuItem=> 'aaa', 201, kbNoKey)} 0 .. 3;
 my $mnam = 'aaa';
 
 my $sub1 =
