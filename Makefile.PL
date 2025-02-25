@@ -17,6 +17,9 @@ WriteMakefile(
     INC          => "$cflags", # e.g., '-I. -I/usr/include/other'
     OBJECT  => 'TVision.o TVision-methods.o',
     XS  => { 'TVision.xs' => 'TVision.cpp', 'TVision-methods.xs' => 'TVision-methods.cpp' },
+    BUILD_REQUIRES => {
+	'Text::Template' => 0
+    },
 );
 
 sub MY::xs_c {

@@ -1,5 +1,6 @@
 package TVision;
 our $VERSION=0.01;
+
 require DynaLoader;
 require Exporter;
 our @ISA = qw(Exporter DynaLoader);
@@ -15,12 +16,17 @@ Some widgets (TButton) has 'num' key, which is usually small integer for the
 onCommand event. If 0 - then next availlable is taken.
 
 examples:
+...
 =cut
 
-sub tnew {
+sub tnew($@) {
     my $class = shift;
     my $sub = \&{"TVision::$class\::new"};
     return $sub->(@_);
+}
+
+sub TRect {
+    return [@_]; # could bless to proper package, but no actual need,
 }
 
 #TODO:
@@ -1355,7 +1361,7 @@ $commands = {
 
 }
 
-our @EXPORT = ('tnew');
+our @EXPORT = ('tnew', 'TRect');
 # Items to export into callers namespace by default. Note: do not export
 # names by default without a very good reason. Use EXPORT_OK instead.
 # Do not simply export all your public functions/methods/constants.

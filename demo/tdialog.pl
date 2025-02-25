@@ -42,7 +42,7 @@ sub createReplaceDialog {
     $d->insert( tnew (THistory=> [ 34, 6, 37, 7 ], $control, 11 ) );
 
     $d->insert( tnew (TCheckBoxes => [ 3, 8, 37, 12 ], [
-        "~C~ase sensitive",
+        "~C~ase sensitive (учит. рег-р)",
         "~W~hole words only",
         "~P~rompt on replace",
         "~R~eplace all"]
