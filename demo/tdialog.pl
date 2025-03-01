@@ -60,14 +60,11 @@ sub createReplaceDialog {
 }
 
 
-my $tapp = TVision::TVApp::new;
+my $tapp = tnew 'TVApp';
 my $desktop = $tapp->deskTop;
 
-my $d = createFindDialog;
-$desktop->insert($d);
-
-my $d2 = createReplaceDialog;
-$desktop->insert($d2);
+$desktop->insert(createFindDialog);
+$desktop->insert(createReplaceDialog);
 
 $tapp->run;
 

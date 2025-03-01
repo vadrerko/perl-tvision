@@ -155,9 +155,11 @@ EOS
 	void cascade()
 	void dosShell()
 	void tile()
+	void shutDown()
 
       TProgram:
 	void run()
+	void idle()
 	void setScreenMode(int mode)
 	TView *validView(TView *p)
 
@@ -335,6 +337,7 @@ EOS
         void resetCurrent()
         #void setCurrent( TView *p, selectMode mode )
         void selectNext( int forwards )
+        void redraw()
       TInputLine:
         void setData(char *data)
       TButton:

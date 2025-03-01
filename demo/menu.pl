@@ -136,8 +136,8 @@ my $sub1 =
 ;
 print "last mnam is $mnam\n";
 
-my $menubar = TVision::TMenuBar::new([0,0,179,1],$sub1);
-my $tapp = TVision::TVApp::new($menubar);
+my $menubar = tnew TMenuBar=>([0,0,179,1],$sub1);
+my $tapp = tnew TVApp => $menubar;
 
 my $desktop = $tapp->deskTop;
 $tapp->onCommand(my $sub = sub {

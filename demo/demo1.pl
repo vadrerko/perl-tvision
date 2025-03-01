@@ -1,11 +1,10 @@
 use strict;
 use TVision;
 
-my $tapp = TVision::TVApp::new;
+my $tapp = tnew 'TVApp';
 my $desktop = $tapp->deskTop;
-my $w = TVision::TWindow::new([1,1,120,15],'моё окно, товарищи',5);
+my $w = tnew TWindow=>([1,1,120,15],'моё окно, товарищи',5);
 my $w2 = TVision::TWindow::new([16,1,120,30],'моё окно, товарищи',5);
-#my $ew = TVision::TEditWindow::new(1,11,120,30,'моё окно, товарищи 2',23);
 my $d = TVision::TDialog::new([52,13,90,19],'dialog');
 my $b2 = TVision::TButton::new([1,1,30,3],'кнопка2',125,0);
 my $b = TVision::TButton::new([100,2,118,4],'кнопка',123,0);
@@ -22,14 +21,11 @@ $desktop->insert($w);
 $desktop->insert($w2);
 $desktop->insert($e);
 $desktop->insert($radiobtns);
-#$desktop->insert($ew);
 $desktop->insert($d);
 $w->insert($b2);
 $w->insert($checkboxes);
 $w->insert($st);
 $desktop->insert($b);
-#$desktop->insert($sb);
-#$desktop->insert($ind);
 $w2->insert($tedit);
 $tapp->on_idle(sub {$::e++});
 #$tapp->handleEvent(sub {print "handleEvent\n"});
@@ -41,13 +37,12 @@ $tapp->onCommand(my $sub = sub {
 	$e->setData("[".$e->getData."]");
 	$b->setTitle("перекнопка");
 	$e->blockCursor;
-	#$b->locate(15,15,30,17);
+	$b->locate([15,15,30,17]);
     }
     elsif ($cmd == 125) {
 	$e->normalCursor;
     }
 });
 $tapp->run;
-print "r=$::r e=$::e";
-print 'xx', $e->getData(), ";\n";
+print "r=$::r e=$::e, input-line->getData =", $e->getData(), ";\n";
 
