@@ -1,7 +1,7 @@
 {{{
 # this file is for Text::Template with DELIMITERS=>['{{{','}}}'] option,
 # So it could be processed this way:
-# perl -MText::Template -we "Text::Template::fill_in_file('typemap.in', DELIMITERS=>['{{{','}}}'],OUTPUT => \*STDOUT)" > typemap
+# perl -MText::Template -we "Text::Template::fill_in_file('TVision-methods.xs.in', DELIMITERS=>['{{{','}}}'],OUTPUT => \*STDOUT)" > TVision-methods.xs
 # alternatively, this file could be transformed with vim-plugin vispen
 }}}
 #define Uses_TBackground

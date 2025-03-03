@@ -2,14 +2,10 @@ use strict;
 use TVision (':commands', 'tnew', 'TRect');
 
 my $data = [
-    ["Helton, Andrew", "Asterisk International", "Purch. Mgr.", "(415) 868-3964",
-        'business | personal', 'male'],
-    ["White, Natalie", "Exclamation, Inc.", "VP sales", "(408) 242-2030",
-        'business', 'female'],
-    ["Stern, Peter", "", "Decent violinist", "(111) 222-5555",
-        'personal', 'male'],
-    ["Whitcom, Hana O.", "Nate's girlfriend", "Birthday: Jan 8, 1990", "(408) 426-1234",
-        'personal', 'female'],
+    ["Helton, Andrew", "Asterisk International", "Purch. Mgr.", "(415) 868-3964", 'business | personal', 'male'],
+    ["White, Natalie", "Exclamation, Inc.", "VP sales", "(408) 242-2030", 'business', 'female'],
+    ["Stern, Peter", "", "Decent violinist", "(111) 222-5555", 'personal', 'male'],
+    ["Whitcom, Hana O.", "Nate's girlfriend", "Birthday: Jan 8, 1990", "(408) 426-1234", 'personal', 'female'],
 ];
 
 sub makeForm {

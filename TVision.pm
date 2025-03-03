@@ -1,13 +1,28 @@
 package TVision;
-our $VERSION=0.01;
+our $VERSION=0.15;
 
-require DynaLoader;
-require Exporter;
-our @ISA = qw(Exporter DynaLoader);
-__PACKAGE__->bootstrap;
+=head1 NAME
 
-=comment
-The TVision package is a perl glue to turbovision library.
+TVision - Perl glue to the TurboVision library
+
+=head1 SYNOPSIS
+
+    use TVision;
+
+    my $tapp = tnew 'TVApp';
+    my $w = tnew 'TWindow', [1,1,120,15],'моё окно, товарищи',5;
+    my $b = tnew 'TButton', [1,1,30,3],'кнопка', 125, 0;
+    my $checkboxes = tnew 'TCheckBoxes', [3,3,81,9], ['a'..'s'];
+    my $e = tnew TInputLine => ([3,11,81,13],100);
+    $tapp->deskTop->insert($w);
+    $w->insert($_) for ($checkboxes, $e, $b);
+    $e->focus();
+    $tapp->run;
+
+=head1 DESCRIPTION
+
+The TVision package is a perl glue to the TurboVision library
+github.com/magiblot/tvision.
 
 All the TVision::xxxx widgets are array refs, where first item at index 0
 holds address of the underlying C++ object, 2nd TBD TODO TBD
@@ -15,9 +30,15 @@ holds address of the underlying C++ object, 2nd TBD TODO TBD
 Some widgets (TButton) has 'num' key, which is usually small integer for the
 onCommand event. If 0 - then next availlable is taken.
 
-examples:
-...
+TRect is array ref of 4 integers, which isn't always blessed to TVision::TRect.
+
 =cut
+
+require DynaLoader;
+require Exporter;
+our @ISA = qw(Exporter DynaLoader);
+__PACKAGE__->bootstrap;
+
 
 sub tnew($@) {
     my $class = shift;
