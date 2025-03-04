@@ -31,7 +31,6 @@ to build tvision.
 * TButton/TMenu -oncommand => sub {...}
 * tie variable to control's setData/getData, so to allow -textvariable => \my $var
 * TStatusDef TStatusItem TStatusLine
-* TPoint
 * TKeys
 * TEvent
 * better typemaps for the unit and other similar types

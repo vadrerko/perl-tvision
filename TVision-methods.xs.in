@@ -80,7 +80,7 @@ TDeskTop* deskTop(TVApp *tapp)
 	    my ($fun, $args) = /^\s*(\S+)\s*\(\s*(.*?)\s*\)/;
 	    my $num = $fun=~s/(\d+)$// ? $1 : '';
 	    $args =~ s/TStringView/char */g;
-	    my $argv = $args =~ s/(\w+\s*\*|int|char|TRect)//gr =~ s/=.*?(?=(?:,|(?:\s*$)))//gr;
+	    my $argv = $args =~ s/(\w+\s*\*|int|char|TRect|TPoint)//gr =~ s/=.*?(?=(?:,|(?:\s*$)))//gr;
 	    $argv =~ tr|&|*|;
 	    $args =~ tr|&||d;
 	    # TKey TODO:
@@ -135,8 +135,9 @@ EOS
 	    my ($fun, $args, $body) = /^\s*([^(]+)\s*\(\s*(.*?)\s*\)\s*(.*)$/;
 	    my $output = $fun =~ /^void/ ? '' : "    OUTPUT:\n        RETVAL\n";;
 	    my $funa = $fun =~ s/^\S+\s*//r =~ tr/*//dr;
+	    $fun=~tr/_/ /;
 	    $args =~ s/TStringView/char */g;
-	    my $argv = $args =~ s/(\w+\s*\*|\bint|\bchar\b|\bshort\b|\TRect)//gr;
+	    my $argv = $args =~ s/(\w+\s*\*|\bunsigned int|\bint|\bchar\b|\bshort\b|TRect|TPoint)//gr;
 	    my $comap =  $args =~ /^\s*$/ ? "" : ",";
 	    $args = "$pkg *self$comap$args";
 	    if ($body =~ /^\s*$/) { $body = ($output? "RETVAL = " : "") . "self->$funa($argv);"; }
@@ -171,7 +172,7 @@ EOS
 	TRect getBounds()
 	TRect getExtent()
 	TRect getClipRect()
-	#Boolean mouseInView( TPoint mouse ) noexcept;
+	int mouseInView( TPoint mouse )
 	#Boolean containsMouse( TEvent& event ) noexcept;
 	void growTo( short x, short y )
 	void moveTo( short x, short y )
@@ -208,8 +209,8 @@ EOS
 	#void keyEvent( TEvent& event );
 	#Boolean mouseEvent( TEvent& event, ushort mask );
 	#Boolean textEvent( TEvent &event, TSpan<char> dest, size_t &length );
-	#TPoint makeGlobal( TPoint source ) noexcept;
-	#TPoint makeLocal( TPoint source ) noexcept;
+	TPoint makeGlobal( TPoint source )
+	TPoint makeLocal( TPoint source )
 	TView *nextView()
 	TView *prevView()
 	TView *prev()
@@ -294,7 +295,7 @@ EOS
 	void drawLines( int a, int b, int uint )
 	#void formatLine(TScreenCell *, uint, int, TAttrPair );
 	void find()
-	#uint getMousePtr( TPoint );
+	unsigned_int getMousePtr( TPoint p)
 	int hasSelection()
 	void hideSelect()
 	int isClipboard()
@@ -384,9 +385,9 @@ EOS
 	int selStart
 	int selEnd
 	int curPtr
-	#TPoint curPos
-	#TPoint delta
-	#TPoint limit
+	TPoint curPos
+	TPoint delta
+	TPoint limit
 	int drawLine
 	int drawPtr
 	int delCount
@@ -414,12 +415,12 @@ EOS
 	#const char *title;
       TView:
 	TView *next
-        #TPoint size
+        TPoint size
         int options
         int eventMask
         int state
-        #TPoint origin
-        #TPoint cursor
+        TPoint origin
+        TPoint cursor
         int growMode
         int dragMode
         int helpCtx

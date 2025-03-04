@@ -8,5 +8,6 @@ Makefile.PL
 TVision-methods.xs.in
 typemap.in
 TVision.xs
+TVision.pm
 README.md
 MANIFEST
