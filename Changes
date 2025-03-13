@@ -1,0 +1,6 @@
+Revision history for the TurboVision Perl extension.
+
+0.18	2025-03-15
+	- +TColorSelector
+	- put 2 generated files into CPAN distribution: typemap and TVision-methods.xs
+	- changed git repository
