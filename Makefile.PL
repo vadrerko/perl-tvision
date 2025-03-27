@@ -77,9 +77,9 @@ if (!$ldflags and !$cflags) {
 	# assume normal gcc/cmake/make
 	mkdir 'tv-build';
 	chdir 'tv-build';
-	if (`gcc --version` =~ /^\S+ +\(.*?\) +(\d+)\.(\d+)\.(\d+)$/m) {
+	if (`gcc --version` =~ /^\S+ +\(.*?\) +(\d+)\.(\d+)\.(\d+)(?: \d*)?$/m) {
 	    my $gccver = sprintf "%02d.%03d%03d", $1, $2, $3;
-	    if ($gccver>11) {
+	    if ($gccver>=12) {
 		print "GCC version $gccver OK, do cmake\n";
 		`cmake -S ../tvision.git -B .  2>&1 > cmake-out.txt`;
 		print "do make\n";
@@ -87,7 +87,7 @@ if (!$ldflags and !$cflags) {
 		$cflags = "-Itvision.git/include";
 		$ldflags = "-ltv-build/libtvision.a";
 	    } else {
-		print "warning: your GCC version $gccver is <10. continue, but...\n";
+		print "warning: your GCC version $gccver is less than 12.0. continue, but...\n";
 	    }
 	} else {
 	    print "warning: can't see version of your gcc. continue, but...\n" . ("it is ".`gcc --version`);
@@ -119,9 +119,6 @@ WriteMakefile(
     INC           => "$cflags", # e.g., '-I. -I/usr/include/other'
     OBJECT  => 'TVision.o TVision-methods.o',
     XS      => { 'TVision.xs' => 'TVision.cpp', 'TVision-methods.xs' => 'TVision-methods.cpp' },
-    BUILD_REQUIRES => {
-	'Text::Template' => 0
-    },
 );
 
 sub MY::xs_c {
