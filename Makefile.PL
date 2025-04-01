@@ -85,7 +85,7 @@ if (!$ldflags and !$cflags) {
 		print "do make\n";
 		`make 2>&1 > make-out.txt`;
 		$cflags = "-Itvision.git/include";
-		$ldflags = "-ltv-build/libtvision.a";
+		$ldflags = "-Ltv-build -ltvision -lncurses -lncursesw";
 	    } else {
 		print "warning: your GCC version $gccver is less than 12.0. continue, but...\n";
 	    }
