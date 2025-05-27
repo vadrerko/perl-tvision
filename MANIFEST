@@ -1,6 +1,7 @@
 demo/demo1.pl
 demo/forms.pl
 demo/menu.pl
+demo/pack.pl
 demo/tdialog.pl
 demo/tedit.pl
 t/f.t
@@ -11,6 +12,9 @@ typemap
 typemap.in
 TVision.xs
 TVision.h
+tkInt.h
+tkPack.c
+tkPack-cpp.xs
 TVision.pm
 README.md
 MANIFEST

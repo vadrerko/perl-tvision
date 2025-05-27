@@ -69,6 +69,7 @@ MODULE=TVision::TApplication PACKAGE=TVision::TApplication
 TDeskTop* deskTop(TVApp *tapp)
     CODE:
         RETVAL = tapp->deskTop;
+	// av_store(RETVALSV,1,newSVpv(".",0));
     OUTPUT:
 	RETVAL
 
@@ -101,7 +102,7 @@ EOS
 	TLabel(TRect r, TStringView aText, TView *aLink )
 	TButton(TRect r, char *title, int cmd, int flags)
 	TScrollBar(TRect r)
-        TColorSelector(TRect Bounds, int ASelType)
+        #TColorSelector(TRect Bounds, int ASelType) RETVAL = new TColorSelector( Bounds,  (TColorSelector::ColorSel)ASelType);
 	TIndicator(TRect r)
 	TInputLine(TRect r, int limit)
 	TMenuBar(TRect r, TSubMenu* &aMenu)
@@ -340,7 +341,7 @@ EOS
       TMenuItem:
         void append(TMenuItem *aNext)
       TGroup:
-        void insert(TWindow *what)
+        void xinsert(TWindow *what) self->insert(what);
 	void insertView(TView *p, TView *Target)
         void remove( TView *p )
         void removeView( TView *p )
@@ -489,7 +490,7 @@ MODULE=TVision::TCheckBoxes PACKAGE=TVision::TCheckBoxes
 
 TCheckBoxes* new(TRect r,  AV *_items)
     CODE:
-        int cnt = av_count(_items);
+        int cnt = av_len(_items);
 	//printf("items=%d\n",cnt);
         TSItem *tsit = 0;
 	for (int i=cnt-1; i>=0; i--) {
@@ -506,7 +507,7 @@ MODULE=TVision::TRadioButtons PACKAGE=TVision::TRadioButtons
 
 TRadioButtons* new(TRect r, AV *_items)
     CODE:
-        int cnt = av_count(_items);
+        int cnt = av_len(_items);
 	//printf("items=%d\n",cnt);
         TSItem *tsit = 0;
 	for (int i=cnt-1; i>=0; i--) {

@@ -115,10 +115,16 @@ WriteMakefile(
         }
     },
     LIBS          => ["$ldflags"],
-    # DEFINE        => TODO
+    BUILD_REQUIRES => {
+	'ExtUtils::ParseXS' => 0,
+    },
     INC           => "$cflags", # e.g., '-I. -I/usr/include/other'
-    OBJECT  => 'TVision.o TVision-methods.o',
-    XS      => { 'TVision.xs' => 'TVision.cpp', 'TVision-methods.xs' => 'TVision-methods.cpp' },
+    OBJECT  => 'TVision.o TVision-methods.o tkPack-cpp.o',
+    XS      => {
+	'TVision.xs' => 'TVision.cpp',
+	'TVision-methods.xs' => 'TVision-methods.cpp',
+	'tkPack-cpp.xs' => 'tkPack-cpp.cpp',
+    },
 );
 
 sub MY::xs_c {
@@ -135,7 +141,6 @@ TVision-methods.xs: TVision-methods.xs.in
 
 typemap: typemap.in
 	$(PERL) -MText::Template -we "Text::Template::fill_in_file('typemap.in', DELIMITERS=>['{{{','}}}'],OUTPUT => \*STDOUT)" > typemap
-
 EOS
 }
 
