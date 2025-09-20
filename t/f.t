@@ -108,7 +108,7 @@ $tapp->on_idle(my $sub = sub {
     if ($::e % 10 == 0) {
 	$f[int(rand($#f))]->focus();
     }
-    if ($::e>500) {
+    if ($::e>250) {
 	$tapp->endModal(42+42+42+42+42);
     }
 });

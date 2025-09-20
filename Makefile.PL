@@ -81,13 +81,16 @@ if (!$ldflags and !$cflags) {
 	    my $gccver = sprintf "%02d.%03d%03d", $1, $2, $3;
 	    if ($gccver>=12) {
 		print "GCC version $gccver OK, do cmake\n";
-		`cmake -S ../tvision.git -B .  2>&1 > cmake-out.txt`;
+                # -DCMAKE_POSITION_INDEPENDENT_CODE=ON to avoid error 'relocation R_X86_64_TPOFF32 against ...'
+		`cmake -S ../tvision.git -B . -DCMAKE_POSITION_INDEPENDENT_CODE=ON  2>&1 > cmake-out.txt`;
 		print "do make\n";
 		`make 2>&1 > make-out.txt`;
 		$cflags = "-Itvision.git/include";
-		$ldflags = "-Ltv-build -ltvision -lncurses -lncursesw";
+		$ldflags = "-Ltv-build -ltvision -lncurses -lncursesw -lstdc++";
 	    } else {
 		print "warning: your GCC version $gccver is less than 12.0. continue, but...\n";
+		$cflags = "-Itvision.git/include";
+		$ldflags = "-Ltv-build -ltvision -lncurses -lncursesw";
 	    }
 	} else {
 	    print "warning: can't see version of your gcc. continue, but...\n" . ("it is ".`gcc --version`);

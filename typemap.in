@@ -30,6 +30,7 @@
     TScrollBar
     TIndicator
     TEditor
+    TFileEditor
     TDialog
     TScreen
     TSItem

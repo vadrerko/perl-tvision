@@ -50,6 +50,7 @@
 
 extern TStatusLine *default_TStatusLine;
 extern TMenuBar *default_TMenuBar;
+extern TVApp *tapp;
 
 MODULE=TVision::TVApp PACKAGE=TVision::TVApp
 
@@ -58,7 +59,8 @@ TVApp* new(TMenuBar *tmbr=0, TStatusLine *tsl=0)
         if (tmbr)
 	    default_TMenuBar = tmbr;
 	default_TStatusLine = tsl;
-        RETVAL = new TVApp();
+        tapp = new TVApp();
+        RETVAL = tapp;
         // RETVAL = get_sv("TVision::TApplication::the_app", GV_ADD);
 	//do_sv_dump(0, PerlIO_stderr(), RETVAL, 0, 10, 0,0);
     OUTPUT:
@@ -114,6 +116,7 @@ EOS
 	TMenuItem1(TStringView aName, TKey aKey, TMenu *aSubMenu, int aHelpCtx=hcNoContext, TMenuItem *aNext=0)
 	TSubMenu( TStringView nm, TKey key, int helpCtx = hcNoContext )
 	TEditor(TRect r, TScrollBar *sb1=0, TScrollBar *sb2=0, TIndicator *ind=0, int n=1000)
+	TEditWindow(TRect r, char *title, int num)
 	TWindow(TRect r, char *title, int num)
         TView(TRect r)
 	TDialog(TRect r, char *title)
@@ -266,6 +269,13 @@ EOS
 	void zoom()
 	void shutDown()
 
+      TFileEditor:
+	# error: invalid use of incomplete type 'class TFileEditor'
+        # int loadFile()
+        # int save()
+        # int saveAs()
+        # int saveFile()
+
       TEditor:
 	char bufChar( int a)
 	int bufPtr( int a)
@@ -280,12 +290,12 @@ EOS
 	#virtual void initBuffer();
 	#virtual TMenuItem& initContextMenu( TPoint );
 	int insertMultilineText( char *a, int b)
-	#Boolean insertBuffer( const char *, uint, uint, Boolean, Boolean );
+	int insertBuffer( char *c, int uint1, int uint2, int Boolean1, int Boolean2 )
 	int insertEOL( int Boolean )
 	#virtual Boolean insertFrom( TEditor * );
-	#Boolean insertText( const void *, uint, Boolean );
+	int insertText( char *cv, int uint, int Boolean )
 	void scrollTo( int x, int y)
-	#Boolean search( const char *, ushort );
+	int search(char *c, int ushort )
 	#virtual Boolean setBufSize( uint );
 	void setCmdState( int ushort, int Boolean )
 	void setSelect( int a, int b, int Boolean)
@@ -388,7 +398,7 @@ EOS
 	TScrollBar *hScrollBar
 	TScrollBar *vScrollBar
 	TIndicator *indicator
-	#char *buffer;
+	char *buffer
 	int bufSize
 	int bufLen
 	int gapLen
@@ -416,6 +426,8 @@ EOS
 	int lockCount
 	int updateFlags
 	int keyState
+      TEditWindow:
+	TFileEditor *editor
       TWindow:
 	int flags
 	TRect zoomRect

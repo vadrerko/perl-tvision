@@ -4,6 +4,7 @@ demo/menu.pl
 demo/pack.pl
 demo/tdialog.pl
 demo/tedit.pl
+demo/teditwindow.pl
 t/f.t
 Makefile.PL
 TVision-methods.xs
@@ -16,6 +17,7 @@ tkInt.h
 tkPack.c
 tkPack-cpp.xs
 TVision.pm
+Devel/tvdb.pm
 README.md
 MANIFEST
 Changes
