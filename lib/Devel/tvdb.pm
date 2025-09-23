@@ -19,9 +19,6 @@ sub idle {
     #__PACKAGE__->step;
     #__PACKAGE__->ready;
 }
-sub stop {
-    print "stop\n";
-}
 sub loadfile {
     print "loadfile[@_]\n";
 }
@@ -79,6 +76,7 @@ my %files2cnt;
 my %pos;
 my $prevline;
 sub stop {
+    # why not called?
     my ($self, $filename, $line) = @_;
     ::_log "STOP - $filename $line \$#dbline=$#DB::dbline";
 }
@@ -126,15 +124,12 @@ sub showfile {
     $cur_editor->insertText("*", 1,0);
     $cur_editor->setSelect($pos{$filename}->[$line], $pos{$filename}->[$line]+4, 0);
 
-    #__PACKAGE__->step;
-    #__PACKAGE__->ready;
     $prevline = $line;
+
 }
 
 my $received_message = '';
 sub output {
-    #::ins("output - @_");
-    #print "output - @_\n";
     TVision::messageBoxRect([5,5,60,12],$_[1],mfOKButton);
     # TVision::messageBox($_[1],mfOKButton);
     $received_message = $_[1];
@@ -184,7 +179,7 @@ sub init1 {
     $evil_window = tnew(TEditWindow=> [82,21,162,40], 'evil.txt', 0);
     $desktop->insert($evil_window);
 
-    $tapp->onCommand($DB::sub1 = sub {
+    $tapp->onCommand(sub {
 	my ($cmd, $arg) = @_;
 	if ($cmd == 201) { # step-in
             __PACKAGE__->step;
@@ -234,26 +229,24 @@ sub init1 {
                     pack [entry .f.e -textvariable txte] -side left
                     pack [button .f.beval -text eval] -side left
                 ');
+                $int->call('.f.bstep', 'configure', -command => sub {
+                    __PACKAGE__->step;
+                    __PACKAGE__->ready;
+                });
+                $int->call('.f.bnext', 'configure', -command => sub {
+                    __PACKAGE__->next;
+                    __PACKAGE__->ready;
+                });
+                $int->call('.f.beval', 'configure', -command => sub {
+                    my $str = $int->GetVar('txte');
+                    ::ins($evil_window->get_editor, "eval $str = " . eval("$str") . ($@ ? $@ : "") . "\n");
+                });
             }
             if ($cur_editor->hasSelection) {
                 my ($ss,$se) = ($cur_editor->get_selStart, $cur_editor->get_selEnd);
                 my $str = substr $cur_editor->get_buffer,$ss, $se-$ss;
                 $int->SetVar('txte', $str);
             }
-            $int->widget('.f.bstep', 'Button')->configure(-command => $DB::sub2 = sub {
-                ::_log "step-tk";
-                __PACKAGE__->step;
-                __PACKAGE__->ready;
-            });
-            $int->widget('.f.bnext', 'Button')->configure(-command => $DB::sub3 = sub {
-                ::_log "next-tk";
-                __PACKAGE__->next;
-                __PACKAGE__->ready;
-            });
-            $int->widget('.f.beval', 'Button')->configure(-command => $DB::sub4 = sub {
-                my $str = $int->GetVar('txte');
-                ::ins($evil_window->get_editor, "eval $str = " . eval("$str") . ($@ ? $@ : "") . "\n");
-            });
 	}
 	elsif ($cmd == cmQuit) {
 	    exit;
